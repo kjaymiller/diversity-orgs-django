@@ -1,7 +1,12 @@
 from django.views.generic import ListView
-from .models import Organization
+from .models import Organization, ParentOrganization
 
 # Create your views here.
-class HomePageView(ListView):
-    template_name = 'home.html'
+class OrgPageView(ListView):
+    template_name = 'org_list.html'
     model = Organization
+
+
+class ParentOrgPageView(ListView):
+    template_name = 'parent_org_list.html'
+    model = ParentOrganization
