@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="    py-2">
+        <form action="">
+            <div class="flex justify-between">
+                <input type="text" class="w-full border border-slate-300 ml-4 px-3 focus:border-gray-100 italic" id="search" placeholder="Search Technologies, Diversity Groups, and Locations">
+                <button type="submit" class="bg-blue-300 hover:bg-blue-400 rounded-lg mx-4 px-3 py-1">Submit</button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="my-4">
+        <h1 class="text-3xl">Feel like you belong</h1>
+        <p>Find and connect with organizations working </p>
+    </div>
+    <div>
+        <h2>Featured Organizations</h2>
+        <ul class="flex justify-around">
+            {# TODO: Loop through featured organizations #}
+            {% comment %}
+                {% for org in featured_orgs %}
+                    <li>
+                        <a href="{{ url_for('organization', id=org.id) }}">{{ org.name }}</a>
+                    </li>
+                {% endfor %}
+            {% endcomment %}
+        </ul>
+    </div>
+{% endblock%}

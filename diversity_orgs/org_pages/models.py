@@ -1,17 +1,52 @@
-from django.db import models
+# from django.db import models
 from django.urls import reverse
+from django.contrib.gis.db import models
 
 # Create your models here.
+class DiversityFocus(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+class TechnologyFocus(models.Model):
+    name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class Location(models.Model):
+    name = models.CharField(max_length=200)
+    location = models.PointField(blank=True)
+    region = models.CharField(max_length=250, blank=True)
+    country = models.CharField(max_length=250, blank=True)
+    base_query = models.CharField(max_length=250, blank=True)
+
+    def __str__(self):
+        return f"{self.name}, {self.region}, {self.country}"
+
+    def get_absolute_url(self):
+        return reverse('org_detail', kwrgs={'pk': self.pk})
+
 
 class ParentOrganization(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    diversity_focus = models.ManyToManyField(
+        DiversityFocus, blank=True, related_name='org_diversity_focus'
+        )
+    featured=models.BooleanField(default=False)
     url = models.URLField(blank=True)
     social_links = models.TextField(blank=True)
     events_link = models.URLField(blank=True)
     online_only = models.BooleanField(default=False)
-    location = models.CharField(max_length=200, blank=True)
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    technology_focus = models.ManyToManyField(
+        TechnologyFocus, blank=True, related_name='org_technology_focus'
+        )
+    code_of_conduct = models.URLField(blank=True)
     
     def __str__(self):
         return self.name
@@ -21,17 +56,25 @@ class ParentOrganization(models.Model):
 
 class Organization(models.Model):
     name = models.CharField(max_length=200)
+    code_of_conduct = models.URLField(blank=True)
     description = models.TextField(blank=True)
-    url = models.URLField(blank=True)
+    diversity_focus = models.ManyToManyField(
+        DiversityFocus, related_name='parent_org_diversity_focus', blank=True
+        )
+    url = models.URLField(blank=True, null=True)
     social_links = models.TextField(blank=True)
     events_link = models.URLField(blank=True)
     online_only = models.BooleanField(default=False)
-    location = models.CharField(max_length=200, blank=True)
-    parent = models.ForeignKey(ParentOrganization, on_delete=models.CASCADE, blank=True, null=True)
-    
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
+    parent = models.ForeignKey(
+        ParentOrganization, on_delete=models.CASCADE, blank=True, null=True
+        )
+    technology_focus = models.ManyToManyField(
+        TechnologyFocus, blank=True, related_name='parent_org_technology_focus',
+        )
+
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse('org_detail', kwrgs={'pk': self.pk})
-
