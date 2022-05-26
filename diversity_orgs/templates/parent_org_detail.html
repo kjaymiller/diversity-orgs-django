@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="m-2 flex items-baseline">
+    <h1 class="text-4xl">{{parentorganization.name}}</h1>
+    <small><a href="{{parentorganization.url}}">link</a></small>
+    {% for focus in organization.diversity_focus.all %}
+    <small><a href="url">{{focus.name}}</a></small>
+    {%endfor%}
+</div>
+
+<div class="m-2">
+    <h2 class="text-xl">Chapters</h2>
+    <div>
+        {% for child in children %}
+        <div class="border rounded-xl p-2 m-3">
+            <h3 class="font-bold"><a href="{% url 'org_detail' child.pk %}">{{child.name}}</a></h3>
+            <p>{{child.location}}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

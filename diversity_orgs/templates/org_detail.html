@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="m-2 flex items-baseline">
+    <h1 class="text-4xl">{{organization.name}}</h1><small><a href="{{organization.url}}">link</a></small>
+    {% for focus in organization.diversity_focus.all %}
+    <small class="p-1 mx-2">{{focus}}</small>
+    {% endfor %}
+    {% for focus in organization.technology_focus.all %}
+    <small class="p-1 mx-2">{{focus}}</small>
+    {% endfor %}
+</div>
+<div class="flex flex-wrap items-baseline">
+    <small class="p-1 bg-slate-100 rounded-xl"><a href="{% url 'parent_org_detail' organization.parent.pk %}">{{organization.parent}}</a></small>
+    <small class="p-1 bg-slate-100 rounded-xl"><a href="">{{organization.location}}</a></small>
+</div>
+
+<div>
+    {{organization.location.location}}
+</div>
+
+<div class="m-2">
+    <h2 class="text-xl">Others</h2>
+    <div class="flex flex-wrap">
+        {% for org in others %}
+        <div class="border rounded-xl p-2 m-3">
+            <a href="{% url 'org_detail' org.pk %}">{{org}}</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="text-4xl">
+    {{location}}
+</div>
+
+<div>
+    {% for org in organization_list %}
+    <div class="p-2 my-2 rounded-xl border"> 
+        {{org}}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

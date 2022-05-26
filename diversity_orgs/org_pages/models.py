@@ -1,4 +1,6 @@
 # from django.db import models
+from site import venv
+from tabnanny import verbose
 from django.urls import reverse
 from django.contrib.gis.db import models
 
@@ -9,8 +11,15 @@ class DiversityFocus(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = 'Diversity Focuses'
+
+
 class TechnologyFocus(models.Model):
     name = models.CharField(max_length=200)
+
+    class Meta:
+        verbose_name_plural = 'Technology Focuses'
 
     def __str__(self):
         return self.name
@@ -22,6 +31,9 @@ class Location(models.Model):
     region = models.CharField(max_length=250, blank=True)
     country = models.CharField(max_length=250, blank=True)
     base_query = models.CharField(max_length=250, blank=True)
+  
+    class Meta:
+        ordering = ('name', 'region', 'country')
 
     def __str__(self):
         return f"{self.name}, {self.region}, {self.country}"

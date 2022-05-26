@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-
 {% block content %}
     <div class="    py-2">
         <form action="">
@@ -10,21 +9,21 @@
         </form>
     </div>
     
-    <div class="my-4">
-        <h1 class="text-3xl">Feel like you belong</h1>
-        <p>Find and connect with organizations working </p>
-    </div>
     <div>
         <h2>Featured Organizations</h2>
-        <ul class="flex justify-around">
+        <div class="flex">
             {# TODO: Loop through featured organizations #}
-            {% comment %}
-                {% for org in featured_orgs %}
-                    <li>
-                        <a href="{{ url_for('organization', id=org.id) }}">{{ org.name }}</a>
-                    </li>
-                {% endfor %}
-            {% endcomment %}
-        </ul>
+            {% for org in featured_orgs %}
+                <div class="m-5 p-3 border rounded text-3xl">
+                    <a href="{% url 'parent_org_detail' org.pk %}"> {{org.name}}</a>
+                </div>
+            {% endfor %}
+        </div>
     </div>
+
+    <div class="my-4">
+        <h1 class="text-3xl">Feel like you belong</h1>
+        <p>Find and connect with organizations working empower, and underrepresented people in tech.</p>
+    </div>
+
 {% endblock%}
