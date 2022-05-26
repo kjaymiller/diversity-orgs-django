@@ -6,10 +6,12 @@ from .views import (
     OrgDetailView, 
     ParentOrgDetailView,
     ParentOrgListView,
+    SearchResultsView,
 )
 
 urlpatterns = [
     path("",HomePageView.as_view(), name="home"),
+    path("search/", SearchResultsView.as_view(), name="search"),
     path("orgs/",OrgListView.as_view(), name="orgs"),
     path("orgs/<int:pk>",OrgDetailView.as_view(), name="org_detail"),
     path("parent_orgs/",ParentOrgListView.as_view(), name="parent_orgs"),

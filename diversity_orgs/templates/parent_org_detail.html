@@ -2,21 +2,21 @@
 
 {% block content %}
 <div class="m-2 flex items-baseline">
-    <h1 class="text-4xl">{{parentorganization.name}}</h1>
-    <small><a href="{{parentorganization.url}}">link</a></small>
-    {% for focus in organization.diversity_focus.all %}
-    <small><a href="url">{{focus.name}}</a></small>
+    <h1 class="text-3xl">{{parentorganization.name}}</h1>
+    <small class="ml-2 rounded-xl p-1 bg-slate-100"><a href="{{parentorganization.url}}">link</a></small>
+    {% for focus in parentorganization.diversity_focus.all %}
+    <small class='mx-1'><a href="url">{{focus.name}}</a></small>
+    {%endfor%}
+    {% for focus in parentorganization.technology_focus.all %}
+    <small class='mx-1'><a href="url">{{focus.name}}</a></small>
     {%endfor%}
 </div>
 
 <div class="m-2">
-    <h2 class="text-xl">Chapters</h2>
+    <h2 class="text-xl">{{organization_list | length}} Chapter{{organization_list|pluralize:',s'}}</h2>
     <div>
-        {% for child in children %}
-        <div class="border rounded-xl p-2 m-3">
-            <h3 class="font-bold"><a href="{% url 'org_detail' child.pk %}">{{child.name}}</a></h3>
-            <p>{{child.location}}</p>
-        </div>
+        {% for org in organization_list %}
+         {% include 'assets/list_index_record.html' %}
         {% endfor %}
     </div>
 </div>

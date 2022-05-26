@@ -79,11 +79,11 @@ WSGI_APPLICATION = 'diversity_orgs.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ.get("DBNAME", 'testgis'), 
-        'USER': os.environ.get("DBUSER", 'postgres'), 
-        'PASSWORD': os.environ.get("DBPASS", 'postgres'), 
-        'HOST': os.environ.get("DBHOST", 'localhost'),
-        'PORT': os.environ.get("DBPORT",'5432'),
+        'NAME': os.environ.get("POSTGRES_DBNAME", 'testgis'), 
+        'USER': os.environ.get("POSTGRES_DBUSER", 'postgres'), 
+        'PASSWORD': os.environ.get("POSTGRES_DBPASS", 'postgres'), 
+        'HOST': os.environ.get("POSTGRES_DBHOST", 'localhost'),
+        'PORT': os.environ.get("POSTGRES_DBPORT",'5432'),
     }
 }
 

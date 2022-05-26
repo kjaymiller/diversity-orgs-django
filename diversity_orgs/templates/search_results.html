@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}
+    Search: {{query}}
+{% endblock %}
+
+{% block content %}
+{{organization_list | length}} Results for: <em>{{query}}</em>
+
+<div>
+    {% for org in organization_list %}
+        {% include 'assets/list_index_record.html'%}
+    {% endfor %}
+</div>
+{% endblock %}

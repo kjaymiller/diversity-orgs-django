@@ -1,14 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="text-4xl">
-    {{location}}
+    {{organization_list|length}} Org{{organization_list|pluralize:",s"}} in {{location}}
 </div>
 
 <div>
     {% for org in organization_list %}
-    <div class="p-2 my-2 rounded-xl border"> 
-        {{org}}
-    </div>
+        {% include 'assets/list_index_record.html' %}
     {% endfor %}
 </div>
 {% endblock %}

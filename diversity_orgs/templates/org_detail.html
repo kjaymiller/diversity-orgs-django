@@ -11,12 +11,10 @@
     {% endfor %}
 </div>
 <div class="flex flex-wrap items-baseline">
-    <small class="p-1 bg-slate-100 rounded-xl"><a href="{% url 'parent_org_detail' organization.parent.pk %}">{{organization.parent}}</a></small>
-    <small class="p-1 bg-slate-100 rounded-xl"><a href="">{{organization.location}}</a></small>
-</div>
-
-<div>
-    {{organization.location.location}}
+    {% if organization.parent %}
+        <small class="p-1 bg-slate-100 rounded-xl"><a href="{% url 'parent_org_detail' organization.parent.pk %}">{{organization.parent}}</a></small>
+    {% endif %}
+        <small class="p-1 bg-slate-100 rounded-xl"><a href="{% url 'location_filter' organization.location.pk %}">{{organization.location}}</a></small>
 </div>
 
 <div class="m-2">

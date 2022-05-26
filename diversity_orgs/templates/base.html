@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>DiversityOrgs.tech</title>
+    <title>
+    {% block title %}{% endblock %} DiversityOrgs.tech</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
     
     <div class="mx-auto my-2 container">
         <div class="my-5 py-2">
-            <h1 class="my-7 text-7xl"><a href="/">DiversityOrgs.Tech</a></h1>
+            <h1 class="my-7 text-7xl"><a href="/">DiversityOrgs.Tech - <small><em>Beta</em></small></a></h1>
         </div>
+        {% include 'assets/search.html' %}
         {% block content %}
         {% endblock %}    
     </div>
