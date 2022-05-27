@@ -84,7 +84,7 @@ DATABASES = {
         'NAME': os.environ.get("POSTGRES_DBNAME"), 
         'USER': os.environ.get("POSTGRES_DBUSER"), 
         'PASSWORD': os.environ.get("POSTGRES_DBPASS"), 
-        'HOST': os.environ.get("POSTGRES_DBHOST"),
+        'HOST': f"{os.environ.get('POSTGRES_DBHOST')}.postgres.database.azure.com",
     }
 }
 
