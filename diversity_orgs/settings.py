@@ -27,8 +27,9 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET', 'insecure-do-not-use-this-in-produc
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'diversityorgs-django-app.azurewebsites.net',
-    'localhost',]
+    os.environ.get('SITE_HOSTNAME'),
+    'localhost',
+]
 
 
 # Application definition
