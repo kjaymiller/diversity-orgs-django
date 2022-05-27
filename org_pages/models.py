@@ -1,8 +1,6 @@
-# from django.db import models
-from site import venv
-from tabnanny import verbose
+from django.db import models
 from django.urls import reverse
-from django.contrib.gis.db import models
+
 
 # Create your models here.
 class DiversityFocus(models.Model):
@@ -27,7 +25,6 @@ class TechnologyFocus(models.Model):
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
-    location = models.PointField(blank=True)
     region = models.CharField(max_length=250, blank=True)
     country = models.CharField(max_length=250, blank=True)
     base_query = models.CharField(max_length=250, blank=True)
