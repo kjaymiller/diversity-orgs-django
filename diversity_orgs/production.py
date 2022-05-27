@@ -26,9 +26,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET', 'insecure-do-not-use-this-in-produc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'diversityorgs-django-app.azurewebsites.net',
-    'localhost',]
+ALLOWED_HOSTS = ['diversityorgs-django-app.azurewebsites.net']
 
 
 # Application definition
@@ -45,13 +43,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # Added after security
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 
 ]
 
@@ -85,7 +84,7 @@ DATABASES = {
         'NAME': os.environ.get("POSTGRES_DBNAME"), 
         'USER': os.environ.get("POSTGRES_DBUSER"), 
         'PASSWORD': os.environ.get("POSTGRES_DBPASS"), 
-        'HOST': f"{os.environ.get("POSTGRES_DBHOST")}.postgres.database.azure.com",
+        'HOST': os.environ.get("POSTGRES_DBHOST"),
     }
 }
 
