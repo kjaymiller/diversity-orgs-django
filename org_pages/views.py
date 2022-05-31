@@ -9,6 +9,7 @@ from .models import (
 )
 from django.db.models import Q
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
+from itertools import chain
 
 # Create your views here.
 class HomePageView(ListView):
@@ -28,31 +29,35 @@ class SearchResultsView(ListView):
 
         query = self.request.GET.get('q')
 
+        if parent_match:=ParentOrganization.objects.filter(name=query):
+            return parent_match
+    
+        if name_match:=Organization.objects.filter(name__icontains=query):
+            return name_match
+            
         if location_match:=Organization.objects.filter(Q(location__name=query)|Q(location__region=query)|Q(location__country=query)):
             return location_match
             
-        elif diversity_match:=Organization.objects.filter(diversity_focus__name=query):
+        if diversity_match:=Organization.objects.filter(diversity_focus__name=query):
             return diversity_match
             
-        elif techonology_match:=Organization.objects.filter(technology_focus__name=query):
+        if techonology_match:=Organization.objects.filter(technology_focus__name=query):
             return techonology_match
             
         # Create vectors for search
-        else:
-            query = SearchQuery(self.request.GET.get('q'), search_type='websearch')
-            vector = SearchVector('diversity_focus__name', weight='C') \
-                + SearchVector('name', weight='D') \
+        query = SearchQuery(self.request.GET.get('q'), search_type='websearch')
+        vector = SearchVector('diversity_focus__name', weight='C') \
                 + SearchVector('technology_focus__name', weight='B') \
                 + SearchVector('location__name', weight='C') \
                 + SearchVector('location__region', weight='C') \
                 + SearchVector('location__country', weight='B') \
             
-            queryset = Organization.objects.annotate(
+        queryset = Organization.objects.annotate(
                 rank=SearchRank(vector, query, weights=[0.1, 0.3, 0.6, 1.0]),
-                ).filter(rank__gte=0.5).order_by('-rank')
+                ).filter(rank__gte=0.55).order_by('-rank')
             
-            print([(entry, entry.rank) for entry in queryset])
-            return queryset
+        print([(entry, entry.rank) for entry in queryset])
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

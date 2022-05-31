@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load org_extras %}
 {% block title %}
     Search: {{query}}
 {% endblock %}
@@ -6,9 +7,12 @@
 {% block content %}
 
 {{object_list | length}} Results for: <em>{{query}}</em>
-
 {% for org in object_list %}
+    {% if org|classname == "ParentOrganization"%}
+    {% include 'assets/parent_list_index_record.html'%}
+    {% else %}
     {% include 'assets/list_index_record.html'%}
+    {% endif %}
 {% endfor %}
 
 {% endblock %}
