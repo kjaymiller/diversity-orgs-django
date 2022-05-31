@@ -67,9 +67,14 @@ class ParentOrganization(models.Model):
 
     def set_children_focuses(self):
         for child in Organization.objects.filter(parent=self):
+            child.description = self.description
             child.diversity_focus.set(self.diversity_focus.all())
             child.technology_focus.set(self.technology_focus.all())
             child.save()
+
+    def save(self):
+        self.set_children_focuses()
+        super().save()
 
 
 class Organization(models.Model):
