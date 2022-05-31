@@ -4,11 +4,11 @@
 {% endblock %}
 
 {% block content %}
-{{organization_list | length}} Results for: <em>{{query}}</em>
 
-<div>
-    {% for org in organization_list %}
-        {% include 'assets/list_index_record.html'%}
-    {% endfor %}
-</div>
+{{object_list | length}} Results for: <em>{{query}}</em>
+
+{% for org in object_list %}
+    {% include 'assets/list_index_record.html'%}
+{% endfor %}
+
 {% endblock %}

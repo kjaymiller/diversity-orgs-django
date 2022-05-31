@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="text-4xl">
-    {{organization_list|length}} Org{{organization_list|pluralize:",s"}} in {{location}}
+<div class="text-2xl">
+    {{organization_list|length}}
+    {% if diversity %} <span class="font-bold">{{diversity}}</span> {% endif %}
+    Org{{organization_list|pluralize:",s"}} in {{location}}
 </div>
 
 <div>

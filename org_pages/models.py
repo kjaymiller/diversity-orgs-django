@@ -5,6 +5,8 @@ from django.urls import reverse
 # Create your models here.
 class DiversityFocus(models.Model):
     name = models.CharField(max_length=200)
+    parent_diversity_focus = models.ManyToManyField('self', blank=True)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.name
@@ -30,13 +32,13 @@ class Location(models.Model):
     base_query = models.CharField(max_length=250, blank=True)
   
     class Meta:
-        ordering = ('name', 'region', 'country')
+        ordering = ('pk', 'name', 'region', 'country')
 
     def __str__(self):
         return f"{self.name}, {self.region}, {self.country}"
 
     def get_absolute_url(self):
-        return reverse('org_detail', kwrgs={'pk': self.pk})
+        return reverse('filter_location', kwrgs={'pk': self.pk})
 
 
 class ParentOrganization(models.Model):
@@ -63,6 +65,13 @@ class ParentOrganization(models.Model):
     def get_absolute_url(self):
         return reverse('org_detail', kwrgs={'pk': self.pk})
 
+    def set_children_focuses(self):
+        for child in Organization.objects.filter(parent=self):
+            child.diversity_focus.set(self.diversity_focus.all())
+            child.technology_focus.set(self.technology_focus.all())
+            child.save()
+
+
 class Organization(models.Model):
     name = models.CharField(max_length=200)
     code_of_conduct = models.URLField(blank=True)
@@ -81,6 +90,7 @@ class Organization(models.Model):
     technology_focus = models.ManyToManyField(
         TechnologyFocus, blank=True, related_name='parent_org_technology_focus',
         )
+    
 
     def __str__(self):
         return self.name
