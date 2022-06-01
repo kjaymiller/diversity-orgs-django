@@ -1,15 +1,14 @@
 from django.views.generic import ListView, DetailView
-from django.urls import reverse
+from django.conf import settings
 from .models import (
     DiversityFocus,
     Organization, 
     ParentOrganization,
     Location,
-    TechnologyFocus,
 )
 from django.db.models import Q
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
-from itertools import chain
+
 
 # Create your views here.
 class HomePageView(ListView):
@@ -19,6 +18,7 @@ class HomePageView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['featured_orgs'] = ParentOrganization.objects.filter(featured=True)
+        context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
         return context
 
 class SearchResultsView(ListView):

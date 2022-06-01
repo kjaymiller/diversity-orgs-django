@@ -1,0 +1,20 @@
+     <!-- Add references to the Azure Maps Map control JavaScript and CSS files. -->
+     <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" type="text/css" />
+     <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+
+     <!-- Add a reference to the Azure Maps Services Module JavaScript file. -->
+     <script src="https://atlas.microsoft.com/sdk/javascript/service/2/atlas-service.min.js"></script>
+
+     <script>
+     function GetMap(){
+        var map = new atlas.Map("myMap", {
+            view: 'Auto',
+       
+           // Add your Azure Maps primary subscription key. https://aka.ms/am-primaryKey
+           authOptions: {
+               authType: 'subscriptionKey',
+               subscriptionKey: '{{AZURE_MAPS_KEY}}'
+           }
+       });
+    }
+     </script>
