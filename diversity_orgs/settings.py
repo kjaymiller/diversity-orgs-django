@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -120,10 +121,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT=  BASE_DIR / 'static/'
+AZURE_ACCOUNT_NAME = os.environ.get('AZ_STORAGE_ACCOUNT_NAME')
+AZURE_STORAGE_KEY = os.environ.get('AZ_STORAGE_KEY', False)
+AZURE_MEDIA_CONTAINER = os.environ.get('AZURE_MEDIA_CONTAINER', 'media')
+AZURE_STATIC_CONTAINER = os.environ.get('AZURE_STATIC_CONTAINER', 'static')
+MEDIA_URL = os.environ.get('AZ_MEDIA_URL', 'media')
+DEFAULT_FILE_STORAGE = 'backend.azurestorage.AzureMediaStorage'
+STATICFILES_STORAGE  = 'backend.azurestorage.AzureStaticStorage'
+STATIC_URL = os.environ.get('AZ_STATIC_URL', '/static/')
+STATIC_ROOT=  BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

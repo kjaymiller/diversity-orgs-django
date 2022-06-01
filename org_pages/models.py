@@ -1,6 +1,9 @@
 from django.db import models
 from django.urls import reverse
+from uuid import uuid4
 
+def gen_upload_path():
+    return f"media/logos/{uuid4()}/"
 
 # Create your models here.
 class DiversityFocus(models.Model):
@@ -58,6 +61,7 @@ class ParentOrganization(models.Model):
         TechnologyFocus, blank=True, related_name='org_technology_focus'
         )
     code_of_conduct = models.URLField(blank=True)
+    logo = models.ImageField(upload_to=gen_upload_path(), blank=True)
     
     def __str__(self):
         return self.name
@@ -95,7 +99,8 @@ class Organization(models.Model):
     technology_focus = models.ManyToManyField(
         TechnologyFocus, blank=True, related_name='parent_org_technology_focus',
         )
-    
+    logo = models.ImageField(upload_to='media/logos', blank=True)
+
 
     def __str__(self):
         return self.name

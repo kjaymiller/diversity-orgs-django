@@ -5,8 +5,14 @@
         <div class="flex">
             {# TODO: Loop through featured organizations #}
             {% for org in featured_orgs %}
-                <div class="mx-1 my-3 p-3 hover:border hover:border-purple-300 shadow shadow-purple-300 border rounded text-xl">
-                    <a href="{% url 'parent_org_detail' org.pk %}"> {{org.name}}</a>
+            <div class="mx-1 my-3 p-3 hover:border hover:border-purple-300 shadow shadow-purple-300 border rounded text-xl">
+                <a href="{% url 'parent_org_detail' org.pk %}"> 
+                {% if org.logo %}
+                        <img src="{{org.logo.url}}" alt="Logo for {{org.name}}" class="max-h-24 p-4 rounded" />            
+                    {% else %}
+                        {{org.name}}
+                    {% endif %}
+                </a>
                 </div>
             {% endfor %}
         </div>

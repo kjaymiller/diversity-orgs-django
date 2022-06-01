@@ -2,39 +2,43 @@
 
 {% block content %}
 <div class="border rounded-xl p-5">
-<div class="my-2 flex items-end">
-    <h1 class="text-3xl">{{parentorganization.name}}</h1>
-    <small class="ml-2 rounded-xl p-1"><a href="{{parentorganization.url}}">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
-        </svg>
-    </a></small>
-</div>
-<div class="flex mr-3">
-    <div class="flex  items-baseline">
-        <h3 class="font-bold">Diversity Focuses:</h3> 
-        {% for focus in parentorganization.diversity_focus.all %}
-        <small class='mx-1'>{{focus.name}}</small>
-        {%endfor%}
-    </div>
-    
-    <div class="flex  items-baseline">
-        <h3 class="font-bold">Technology Focuses:</h3> 
-        {% for focus in parentorganization.technology_focus.all %}
-        <small class='mx-1'>{{focus.name}}</small>
-        {%endfor%}
+    <div class="my-2 flex items-center">
+    {% if parentorganization.logo %}
+        <div>
+            <img src="{{parentorganization.logo.url}}" alt="Logo for {{parentorganization.name}}" class="max-h-24 p-4 mr-4 rounded" />
+        </div>
+    {% endif %}
+        <div>
+            <div class="flex">
+                <h1 class="text-3xl">{{parentorganization.name}}</h1>
+                <small class="ml-2 rounded-xl p-1"><a href="{{parentorganization.url}}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd" />
+                    </svg>
+                </a></small>
+            </div>
+            <div class="flex items-baseline">
+            <h3 class="font-bold">Diversity Focuses:</h3> 
+            {% for focus in parentorganization.diversity_focus.all %}
+            <small class='mx-1'>{{focus.name}}</small>
+            {%endfor%}
+            <h3 class="font-bold">Technology Focuses:</h3> 
+            {% for focus in parentorganization.technology_focus.all %}
+            <small class='mx-1'>{{focus.name}}</small>
+            {%endfor%}
+        </div>
     </div>
 </div>
 </div>
 
-<p class="my-3 italic ">{{parentorganization.description}}</p>
+    <p class="my-3 italic ">{{parentorganization.description}}</p>
 
-<div class="my-3">
-    <h2 class="text-xl underline underline-offset-2">{{organization_list | length}} {{parentorganization.name}} Chapter{{organization_list|pluralize:',s'}}:</h2>
-    <div>
-        {% for org in organization_list %}
-         {% include 'assets/list_index_record.html' %}
-        {% endfor %}
+    <div class="my-3">
+        <h2 class="text-xl underline underline-offset-2">{{organization_list | length}} {{parentorganization.name}} Chapter{{organization_list|pluralize:',s'}}:</h2>
+        <div>
+            {% for org in organization_list %}
+            {% include 'assets/list_index_record.html' %}
+            {% endfor %}
+        </div>
     </div>
-</div>
 {% endblock %}
