@@ -166,3 +166,5 @@ cython_debug/
 diversity-orgs.json
 diversity_orgs/convert_db_model.py
 .vscode/launch.json
+locations.json
+.prodenv

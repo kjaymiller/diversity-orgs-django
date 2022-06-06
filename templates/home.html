@@ -3,10 +3,10 @@
 {% include 'assets/map_head_embed.html' %}
 {% endblock %}
 {% block content %}
-    <div id="myMap"></div>
+    <div id="map" class="h-96 w-full"></div>
     <div>
         <h2 class="text-2xl font-extrabold">Featured Organizations</h2>
-        <div class="flex">
+        <div class="flex justify-between">
             {% for org in featured_orgs %}
             <div class="mx-1 my-3 p-3 hover:border hover:border-purple-300 shadow shadow-purple-300 border rounded text-xl">
                 <a href="{% url 'parent_org_detail' org.pk %}"> 
@@ -20,7 +20,7 @@
             {% endfor %}
         </div>
     </div>
-
+    
     <div class="my-4">
         <h1 class="text-3xl">Feel like you belong</h1>
         <p>Find and connect with organizations working empower, and underrepresented people in tech.</p>

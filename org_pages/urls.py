@@ -3,14 +3,14 @@ from .views import (
     HomePageView,
     LocationFilterView,
     OrgListView, 
-    OrgDetailView, 
+    OrgDetailView,
     ParentOrgDetailView,
     ParentOrgListView,
     SearchResultsView,
     DiversityFocusFilterView,
     TechnologyFocusFilterView,
     OnlineDiversityFocusFilterView,
-    OnlineTechnologyFocusFilterView
+    OnlineTechnologyFocusFilterView,
 )
 
 urlpatterns = [

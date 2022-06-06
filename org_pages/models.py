@@ -33,7 +33,9 @@ class Location(models.Model):
     region = models.CharField(max_length=250, blank=True)
     country = models.CharField(max_length=250, blank=True)
     base_query = models.CharField(max_length=250, blank=True)
-  
+    latitude = models.DecimalField(max_digits=9, decimal_places=5, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=5, null=True, blank=True)
+
     class Meta:
         ordering = ('pk', 'name', 'region', 'country')
 

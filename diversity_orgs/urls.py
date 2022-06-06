@@ -19,5 +19,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("org_pages.urls")) # include the urls from the org_pages app
+    path('api/', include('api.urls')),
+    path("", include("org_pages.urls")),  # include the urls from the org_pages app
+
 ]

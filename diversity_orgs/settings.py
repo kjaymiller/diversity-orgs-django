@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [os.environ.get('SITE_HOSTNAME', 'localhost')]
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -76,14 +77,18 @@ WSGI_APPLICATION = 'diversity_orgs.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+db_host = f"{os.environ.get('POSTGRES_DBHOST')}.postgres.database.azure.com"
+
+if not os.environ.get('POSTGRES_DBHOST', None):
+    db_host = 'localhost'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("POSTGRES_DBNAME"), 
-        'USER': os.environ.get("POSTGRES_DBUSER"), 
-        'PASSWORD': os.environ.get("POSTGRES_DBPASS"), 
-        'HOST': f"{os.environ.get('POSTGRES_DBHOST')}.postgres.database.azure.com",
+        'NAME': os.environ.get("POSTGRES_DBNAME", "testgis"), 
+        'USER': os.environ.get("POSTGRES_DBUSER", "postgres"), 
+        'PASSWORD': os.environ.get("POSTGRES_DBPASS", "password"), 
+        'HOST': db_host,
     }
 }
 
