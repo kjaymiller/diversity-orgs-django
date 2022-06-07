@@ -17,7 +17,7 @@ class HomePageView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['featured_orgs'] = ParentOrganization.objects.filter(featured=True)
-        context['map_url'] = 'http://localhost:8000/api/featured?format=json'
+        context['map_url'] = './api/featured?format=json'
         context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
         return context
 
