@@ -103,6 +103,10 @@ class Organization(models.Model):
         )
     logo = models.ImageField(upload_to='media/logos', blank=True)
 
+    def save(self):
+        if self.parent and not self.logo:
+            self.logo = self.parent.logo
+        super().save()
 
     def __str__(self):
         return self.name
