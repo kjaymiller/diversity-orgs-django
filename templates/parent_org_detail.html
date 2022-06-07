@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
-
+{% block head %}
+{% include 'assets/map_head_embed.html' %}
+{% endblock %}
 {% block content %}
+<div id="map" class="h-96 w-full"></div>
 <div class="border rounded-xl p-5">
     <div class="my-2 flex items-center">
     {% if parentorganization.logo %}

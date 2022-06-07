@@ -85,7 +85,7 @@
               filter: ['!', ['has', 'point_count']] //Filter out clustered points from this layer.
             })
           ]);
-        datasource.importDataFromUrl('{{map_url}}')    
+        datasource.importDataFromUrl("/api/map?format=json&{{map | escapejs}}")    
     });
 }
 </script>

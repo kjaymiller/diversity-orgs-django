@@ -5,11 +5,33 @@ from org_pages.models import Organization, ParentOrganization
 import api.serializers as serializers
 # Create your views here.
 
-class FeaturedOrganizations(viewsets.ModelViewSet):
-    queryset = Organization.objects \
-        .filter(parent__featured=True) \
+
+class OrgMapQuerySet(viewsets.ModelViewSet):
+    serializer_class = serializers.OrganizationMappingSerializer
+
+    def get_queryset(self):
+        base_params = self.request.query_params.dict()
+        base_params.pop('format', None)
+        print(base_params)
+        orgs = Organization.objects.filter(**base_params) \
+        .filter(parent__isnull=False) \
         .filter(location__isnull=False) \
         .filter(location__latitude__isnull=False)
+        print(orgs)
+        return orgs
+
+    def list(self, *args, **kwargs):
+        context = super().list(*args, **kwargs)
+        return Response({
+                "type": "FeatureCollection",
+                "features": [x['coords'] for x in context.data]
+                })
+
+
+class FeaturedOrganizations(viewsets.ReadOnlyModelViewSet):
+    queryset = Organization.objects \
+        .filter(parent__featured=True) \
+        
     serializer_class = serializers.OrganizationMappingSerializer
 
     def list(self, *args, **kwargs):
@@ -18,6 +40,7 @@ class FeaturedOrganizations(viewsets.ModelViewSet):
                 "type": "FeatureCollection",
                 "features": [x['coords'] for x in context.data]
                 })
+
 
 class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Organization.objects.all()

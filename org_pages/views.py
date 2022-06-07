@@ -17,7 +17,7 @@ class HomePageView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['featured_orgs'] = ParentOrganization.objects.filter(featured=True)
-        context['map_url'] = './api/featured?format=json'
+        context['map'] = 'parent__featured=True'
         context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
         return context
 
@@ -95,6 +95,10 @@ class ParentOrgDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         children = Organization.objects.filter(parent=context['parentorganization'])
         context['organization_list'] = children.order_by('name')
+        parent_org = context['parentorganization'].name
+        context['map'] = f"parent__name={parent_org}"
+        context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
+
         return context
 
 class LocationFilterView(ListView):
