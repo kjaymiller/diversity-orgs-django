@@ -12,12 +12,10 @@ class OrgMapQuerySet(viewsets.ModelViewSet):
     def get_queryset(self):
         base_params = self.request.query_params.dict()
         base_params.pop('format', None)
-        print(base_params)
         orgs = Organization.objects.filter(**base_params) \
         .filter(parent__isnull=False) \
         .filter(location__isnull=False) \
         .filter(location__latitude__isnull=False)
-        print(orgs)
         return orgs
 
     def list(self, *args, **kwargs):
