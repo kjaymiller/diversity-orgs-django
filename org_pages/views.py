@@ -18,6 +18,7 @@ class HomePageView(ListView):
         context = super().get_context_data(**kwargs)
         context['featured_orgs'] = ParentOrganization.objects.filter(featured=True)
         context['map'] = 'parent__featured=True'
+        context['map_sprites'] = [(x.slug, x.logo.url) for x in context['featured_orgs']]
         context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
         return context
 
@@ -76,11 +77,29 @@ class OrgDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['others'] = Organization.objects.filter(
-                location__region = context['organization'].location.region
-                ).exclude(
-                    location__region = None).exclude(
-                    name=context['organization'].name)
+
+        if any((self.object.technology_focus.exists(), self.object.diversity_focus.exists())):
+            others = Organization.objects.all()
+            
+            if self.object.diversity_focus.exists():
+                others = others.filter(diversity_focus__in=self.object.diversity_focus.all())
+        
+            if self.object.technology_focus.exists():
+                others = others.filter(technology_focus__in=self.object.technology_focus.all())
+
+            if self.object.location:
+                others = others.filter(location=kwargs['object'].location)
+            
+            elif self.object.online_only: 
+                others = others.filter(online_only=True)
+            
+
+            context['others'] = others.exclude(
+                parent=self.object.parent,
+                name=self.object.name,
+                )
+
+
         return context
 
 class ParentOrgListView(ListView):
@@ -97,6 +116,7 @@ class ParentOrgDetailView(DetailView):
         context['organization_list'] = children.order_by('name')
         parent_org = context['parentorganization'].name
         context['map'] = f"parent__name={parent_org}"
+        context['map_sprites'] = [(self.object.slug, self.object.logo.url),]
         context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
 
         return context
@@ -106,11 +126,11 @@ class LocationFilterView(ListView):
     model = Organization
 
     def get_queryset(self):
-        return Organization.objects.filter(location__pk=self.kwargs['region_pk'])
+        return Organization.objects.filter(location__pk=self.kwargs['pk'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['location'] = Location.objects.get(pk=self.kwargs['region_pk'])
+        context['location'] = Location.objects.get(pk=self.kwargs['pk'])
         return context
 
 
@@ -127,7 +147,7 @@ class DiversityFocusFilterView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['diversity'] = DiversityFocus.objects.get(pk=self.kwargs['diversity'])
-        context['location'] = Location.objects.get(pk=self.kwargs['region_pk'])
+        context['location'] = Location.objects.get(pk=self.kwargs['location__pk'])
         return context
 
 class TechnologyFocusFilterView(ListView):

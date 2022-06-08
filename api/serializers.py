@@ -1,26 +1,29 @@
-from rest_framework.request import Request
-from django.http import HttpRequest
-from org_pages.models import Organization, ParentOrganization, Location
+from org_pages.models import Organization, ParentOrganization
 from rest_framework import serializers
 
 class OrganizationMappingSerializer(serializers.ModelSerializer):
     coords = serializers.SerializerMethodField()
+    
     class Meta:
         model = Organization
         fields = ('coords',)
 
     def get_coords(self, obj):
         if obj.location:
-            if latitude:=obj.location.latitude:
-                 if longitude:=obj.location.longitude:
-                    return {
-                        "type": "Feature",
-                        "properties": {"parent_name": obj.parent.name},
-                        "geometry": {
-                            "type": "Point",
-                            "coordinates": [obj.location.longitude, obj.location.latitude]
+            if obj.location.latitude and obj.location.longitude:
+                return {
+                    "type": "Feature",
+                    "properties": {
+                        "parent_name": obj.parent.name,
+                        "url": obj.get_absolute_url(),
+                        "logo": obj.parent.slug,
+                        "name": obj.name,
                         },
-                    }
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [obj.location.longitude, obj.location.latitude]
+                    },
+                }
         return None
 
 class OrganizationSerializer(serializers.ModelSerializer):

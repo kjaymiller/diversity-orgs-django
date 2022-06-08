@@ -7,6 +7,7 @@ import api.serializers as serializers
 
 
 class OrgMapQuerySet(viewsets.ModelViewSet):
+    """View for returning the map organization data"""
     serializer_class = serializers.OrganizationMappingSerializer
 
     def get_queryset(self):

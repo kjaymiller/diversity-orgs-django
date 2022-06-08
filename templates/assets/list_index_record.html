@@ -1,6 +1,6 @@
 <div class="p-1 my-1 hover:shadow hover:shadow-purple-200"> 
-    <div class="flex items-baseline">
-    <h3 class="font-bold mr-1 text-lg"><a href="{% url 'org_detail' org.pk %}">{{org}}</a></h3>
+    <div class="flex items-baseline border-b-2">
+    <h3 class="font-bold mr-1 text-lg"><a href="{{org.get_absolute_url}}">{{org}}</a></h3>
         <h4 class="font-light">{{org.location}}</h4>
     </div>
 </div>

@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="border rounded-xl p-5">
-    <small class=""><a href="{% url 'location_filter' organization.location.pk %}">{{organization.location}}</a></small>
+    <small class=""><a href="{{organization.location.get_absolute_url}}">{{organization.location}}</a></small>
     <div class="my-2 flex items-center">
     {% if organization.logo %}
         <div>
@@ -18,15 +18,19 @@
                     </svg>
                 </a></small>
             </div>
-            <div class="flex items-baseline">
-            <h3 class="font-bold">Diversity Focuses:</h3> 
-            {% for focus in organization.diversity_focus.all %}
-            <small class='mx-1'>{{focus.name}}</small>
-            {%endfor%}
-            <h3 class="font-bold">Technology Focuses:</h3> 
-            {% for focus in organization.technology_focus.all %}
-            <small class='mx-1'>{{focus.name}}</small>
-            {%endfor%}
+            <div class="flex items-baseline mr-3">
+            <div class="flex items-baseline mr-3">
+                <h3 class="font-bold">Diversity Focuses:</h3> 
+                {% for focus in organization.diversity_focus.all %}
+                <small class='mx-1'>{{focus.name}}</small>
+                {%endfor%}
+            </div>
+            <div class="flex items-baseline mx-3">
+                <h3 class="font-bold">Technology Focuses:</h3> 
+                {% for focus in organization.technology_focus.all %}
+                <small class='mx-1'>{{focus.name}}</small>
+                {%endfor%}
+            </div>
         </div>
     </div>
 </div>
@@ -37,8 +41,8 @@
     <h2 class="text-xl">Others</h2>
     <div class="flex flex-wrap">
         {% for org in others %}
-        <div class="border rounded-xl p-2 m-3">
-            <a href="{% url 'org_detail' org.pk %}">{{org}}</a>
+        <div class="border border-slate-100 shadow rounded-xl p-2 m-3">
+            <a href="{{org.get_absolute_url}}">{{org}}</a>
         </div>
         {% endfor %}
     </div>

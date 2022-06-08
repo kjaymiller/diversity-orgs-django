@@ -6,12 +6,12 @@
     <div id="map" class="h-96 w-full"></div>
     <div>
         <h2 class="text-2xl font-extrabold">Featured Organizations</h2>
-        <div class="flex justify-between">
+        <div class="columns-md">
             {% for org in featured_orgs %}
-            <div class="mx-1 my-3 p-3 hover:border hover:border-purple-300 shadow shadow-purple-300 border rounded text-xl">
-                <a href="{% url 'parent_org_detail' org.pk %}"> 
+            <div class="w-48 mx-x my-3 px-auto hover:border hover:border-purple-300 shadow shadow-purple-300 border rounded text-xl">
+                <a href="{{org.get_absolute_url }}"> 
                 {% if org.logo %}
-                        <img src="{{org.logo.url}}" alt="Logo for {{org.name}}" class="max-h-24 p-4 rounded" />            
+                        <img src="{{org.logo.url}}" alt="Logo for {{org.name}}" class="mx-auto max-h-24 p-4 rounded" />            
                     {% else %}
                         {{org.name}}
                     {% endif %}
