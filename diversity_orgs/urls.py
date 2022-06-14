@@ -23,5 +23,4 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     path('api/', include('api.urls')),
     path("", include("org_pages.urls")),  # include the urls from the org_pages app
-
 ]
