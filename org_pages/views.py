@@ -1,23 +1,22 @@
 from django.views.generic import ListView, DetailView
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from .models import (
     DiversityFocus,
     Organization, 
-    ParentOrganization,
     Location,
 )
 
 # Create your views here.
 class HomePageView(ListView):
     template_name = "home.html"
-    model = ParentOrganization
-    
+    model = Organization
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['featured_orgs'] = ParentOrganization.objects.filter(featured=True)
-        context['map'] = 'parent__featured=True'
+        context['featured_orgs'] = self.model.objects.filter(is_featured=True)
+        context['map'] = 'parent__is_featured=True'
         context['map_sprites'] = [(x.slug, x.logo.url) for x in context['featured_orgs']]
         context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
         return context
@@ -29,9 +28,6 @@ class SearchResultsView(ListView):
     def get_queryset(self):
 
         query = self.request.GET.get('q')
-
-        if parent_match:=ParentOrganization.objects.filter(name=query):
-            return parent_match
     
         if name_match:=Organization.objects.filter(name__icontains=query):
             return name_match
@@ -56,16 +52,14 @@ class SearchResultsView(ListView):
         queryset = Organization.objects.annotate(
                 rank=SearchRank(vector, query, weights=[0.1, 0.3, 0.6, 1.0]),
                 ).filter(rank__gte=0.55).order_by('-rank')
-            
-        print([(entry, entry.rank) for entry in queryset])
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q')
+        context['parents'] = self.object_list.values('parent__name').distinct()
+        print(context['parents'])
         return context
-    
-
 
 class OrgListView(ListView):
     template_name = 'org_list.html'
@@ -78,47 +72,37 @@ class OrgDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        if any((self.object.technology_focus.exists(), self.object.diversity_focus.exists())):
-            others = Organization.objects.all()
-            
-            if self.object.diversity_focus.exists():
-                others = others.filter(diversity_focus__in=self.object.diversity_focus.all())
+        if children:= self.model.objects.filter(parent=self.object).exclude(location=None):
+            context['children'] = children.order_by('location__country', 'location__name')
+            context['map'] = f'parent={self.object.pk}'
+            context['map_sprites'] = [(self.object.slug, self.object.logo.url)]
+            context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
         
-            if self.object.technology_focus.exists():
-                others = others.filter(technology_focus__in=self.object.technology_focus.all())
+        else:
+            diversity_focuses = []
 
-            if self.object.location:
-                others = others.filter(location=kwargs['object'].location)
+            for focus in self.object.diversity_focus.all():
+                if focus.parents:
+                    for parent in focus.parents.all():
+                        diversity_focuses.append(parent)
             
-            elif self.object.online_only: 
-                others = others.filter(online_only=True)
+            diversity_focuses.extend(self.object.diversity_focus.all())
+            technology_focuses = []
+            for focus in self.object.technology_focus.all():
+                if focus.parents:
+                    for parent in focus.parents.all():
+                        technology_focuses.append(parent)
+            technology_focuses.extend(self.object.technology_focus.all())
             
+            other_orgs = self.model.objects.filter(location=self.object.location,
+            ).exclude(pk=self.object.pk)
 
-            context['others'] = others.exclude(
-                parent=self.object.parent,
-                name=self.object.name,
-                )
+            if diversity_focuses:
+                other_orgs = other_orgs.filter(diversity_focus__in=diversity_focuses)
 
-
-        return context
-
-class ParentOrgListView(ListView):
-    template_name = 'parent_org_list.html'
-    model = ParentOrganization
-
-class ParentOrgDetailView(DetailView):
-    template_name = 'parent_org_detail.html'
-    model = ParentOrganization
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        children = Organization.objects.filter(parent=context['parentorganization'])
-        context['organization_list'] = children.order_by('name')
-        parent_org = context['parentorganization'].name
-        context['map'] = f"parent__name={parent_org}"
-        context['map_sprites'] = [(self.object.slug, self.object.logo.url),]
-        context['AZURE_MAPS_KEY'] = settings.AZURE_MAPS_KEY
-
+            if technology_focuses:
+                other_orgs = other_orgs.filter(technology_focus__in=technology_focuses)
+            context['other_orgs'] = other_orgs
         return context
 
 class LocationFilterView(ListView):
@@ -133,7 +117,6 @@ class LocationFilterView(ListView):
         context['location'] = Location.objects.get(pk=self.kwargs['pk'])
         return context
 
-
 class DiversityFocusFilterView(ListView):
     template_name = 'location_filter.html'
     model = Organization
@@ -142,7 +125,6 @@ class DiversityFocusFilterView(ListView):
         return Organization.objects \
             .filter(location__pk=self.kwargs['region_pk']) \
             .filter(diversity_focus=self.kwargs['diversity'])
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

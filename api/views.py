@@ -1,10 +1,29 @@
-from django.shortcuts import render
+from tokenize import Token
 from rest_framework.response import Response
 from rest_framework import viewsets, generics
-from org_pages.models import Organization, ParentOrganization
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.views import APIView
+from org_pages.models import Organization
 import api.serializers as serializers
 # Create your views here.
 
+class ExampleView(APIView):
+    """
+    An example view.
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        content = {
+            'user': str(request.user),  # `django.contrib.auth.User` instance.
+            'auth': str(request.auth), # None
+        }
+
+        content['msg'] = f"Hello, {request.user.username}"
+
+        return Response(content)
 
 class OrgMapQuerySet(viewsets.ModelViewSet):
     """View for returning the map organization data"""
@@ -29,7 +48,7 @@ class OrgMapQuerySet(viewsets.ModelViewSet):
 
 class FeaturedOrganizations(viewsets.ReadOnlyModelViewSet):
     queryset = Organization.objects \
-        .filter(parent__featured=True) \
+        .filter(parent__is_featured=True) \
         
     serializer_class = serializers.OrganizationMappingSerializer
 
@@ -45,8 +64,3 @@ class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Organization.objects.all()
     lookup_field = 'name'
     serializer_class = serializers.OrganizationSerializer
-
-class ParentOrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ParentOrganization.objects.all()
-    lookup_field = 'name'
-    serializer_class = serializers.ParentOrganizationSerializer

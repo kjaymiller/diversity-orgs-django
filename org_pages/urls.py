@@ -4,8 +4,6 @@ from .views import (
     LocationFilterView,
     OrgListView, 
     OrgDetailView,
-    ParentOrgDetailView,
-    ParentOrgListView,
     SearchResultsView,
     DiversityFocusFilterView,
     TechnologyFocusFilterView,
@@ -16,8 +14,6 @@ from .views import (
 urlpatterns = [
     path("",HomePageView.as_view(), name="home"),
     path("search/", SearchResultsView.as_view(), name="search"),
-    path("parent_orgs/<slug:slug>",ParentOrgDetailView.as_view(), name="parent_org_detail"),
-    path("parent_orgs/",ParentOrgListView.as_view(), name="parent_orgs"),
     path("orgs/",OrgListView.as_view(), name="orgs"),
     path("orgs/<slug:slug>",OrgDetailView.as_view(), name="org_detail"),
     path("filter/location/<int:pk>",LocationFilterView.as_view(), name="location_filter"),

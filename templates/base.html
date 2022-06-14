@@ -7,22 +7,26 @@
     <title>
     {% block title %}{% endblock %} DiversityOrgs.tech</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    {% if map %}
+        {% include 'assets/map_head_embed.html' %}
+    {% endif %}
+
     {% block head %}{% endblock %}
-    <style type="text/css">
-        #map: {
-            height: 40em;
-            width: 100%;
-        }
-    </style>
 </head>
 <body {% if map %}onload="GetMap()"{% endif %}>
-    <div class="mx-auto px-2 container">
-        <div class="my-2 py-2">
-            <h1 class="my-7 text-5xl font-bold"><a href="/">DiversityOrgs.Tech<small class="text-sm font-light">Beta</small></a></h1>
+    <div class="mx-auto mx-2 container">
+        <div class="mt-5 mb-2 p-2 flex flex-wrap">
+            <h1 class="md:text-xl lg:text-5xl font-bold mx-1"><a href="/">DiversityOrgs.Tech</a>
+            <small class="text-xs xl:text-sm font-light">Beta</small></a></h1>
         </div>
+
         {% include 'assets/search.html' %}
+        {% if map %}
+            <div id="map" class="h-96 w-full xl:w-2/3"></div>
+        {% endif %}
         {% block content %}
         {% endblock %}    
     </div>
+    {% include 'footer.html' %}
 </body>
 </html>

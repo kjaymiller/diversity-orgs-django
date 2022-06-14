@@ -33,14 +33,16 @@ ALLOWED_HOSTS = [os.environ.get('SITE_HOSTNAME', 'localhost')]
 
 INSTALLED_APPS = [
     'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'org_pages.apps.OrgPagesConfig', # Orgs
     'corsheaders',
+    'org_pages.apps.OrgPagesConfig', # Orgs
+    'accounts' # Accounts App,
 ]
 
 MIDDLEWARE = [
@@ -54,7 +56,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_ORIGINS = True
 
 # CORS_ORIGIN_WHITELIST = (
@@ -81,6 +82,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'diversity_orgs.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
@@ -92,7 +99,7 @@ if not os.environ.get('POSTGRES_DBHOST', None):
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("POSTGRES_DBNAME", "testgis"), 
+        'NAME': os.environ.get("POSTGRES_DBNAME", "test_db_admin"), 
         'USER': os.environ.get("POSTGRES_DBUSER", "postgres"), 
         'PASSWORD': os.environ.get("POSTGRES_DBPASS", "password"), 
         'HOST': db_host,
@@ -122,11 +129,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -143,10 +147,11 @@ STATICFILES_STORAGE  = 'backend.azurestorage.AzureStaticStorage'
 STATIC_URL = os.environ.get('AZ_STATIC_URL', '/static/')
 STATIC_ROOT=  BASE_DIR / 'static'
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 AZURE_MAPS_KEY=os.environ.get('AZURE_MAPS_KEY', False)
+AUTH_USER_MODEL = "accounts.CustomUser"

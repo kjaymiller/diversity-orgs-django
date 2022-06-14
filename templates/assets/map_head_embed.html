@@ -25,8 +25,9 @@
        map.events.add('ready', function () {
         var datasource = new atlas.source.DataSource(null, {
             cluster: true,
-            clusterRadius: 45,
-            clusterMaxZoom: 15
+            clusterRadius: 25,
+            clusterMaxZoom: 15,
+            clusterMinZoom: 10
         }
         );
         map.sources.add(datasource);
@@ -37,7 +38,8 @@
             iconOptions: {
                 image: ['get', 'logo'],
                 anchor: 'center',
-                allowOverlap: true
+                allowOverlap: true,
+                size: 0.05,
             },
             textOptions: {
                 anchor: "top"

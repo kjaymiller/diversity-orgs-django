@@ -1,22 +1,19 @@
 {% extends 'base.html' %}
-{% block head %}
-{% include 'assets/map_head_embed.html' %}
-{% endblock %}
 {% block content %}
-    <div id="map" class="h-96 w-full"></div>
-    <div>
-        <h2 class="text-2xl font-extrabold">Featured Organizations</h2>
-        <div class="columns-md">
+    <div class=my-4>
+        <h2 class="text-3xl font-extrabold">Featured Organizations</h2>
+        <div class="flex">
             {% for org in featured_orgs %}
-            <div class="w-48 mx-x my-3 px-auto hover:border hover:border-purple-300 shadow shadow-purple-300 border rounded text-xl">
-                <a href="{{org.get_absolute_url }}"> 
+            <div class="h-48 w-72 mx-x my-3 flex items-center px-auto text-2xl">
                 {% if org.logo %}
-                        <img src="{{org.logo.url}}" alt="Logo for {{org.name}}" class="mx-auto max-h-24 p-4 rounded" />            
-                    {% else %}
-                        {{org.name}}
-                    {% endif %}
+                <a href="{{org.get_absolute_url }}"> 
+                    <img src="{{org.logo.url}}" alt="{{org.name}}" class="mx-auto max-h-24 sm:w-full w-72 p-4 rounded" />            
                 </a>
-                </div>
+                {% endif %}
+                <a href="{{org.get_absolute_url }}"> 
+                <h2 class="font-bold invisible lg:visible">{{org.name}}</h2>
+                </a>
+            </div>
             {% endfor %}
         </div>
     </div>

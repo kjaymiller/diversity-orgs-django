@@ -1,4 +1,4 @@
-from org_pages.models import Organization, ParentOrganization
+from org_pages.models import Organization
 from rest_framework import serializers
 
 class OrganizationMappingSerializer(serializers.ModelSerializer):
@@ -39,14 +39,3 @@ class LimitedOrganizationSerializer(serializers.HyperlinkedModelSerializer):
         model = Organization
         fields = ('name', 'location', 'url')
         depth = 1
-       
-
-class ParentOrganizationSerializer(serializers.ModelSerializer):
-    children = serializers.SerializerMethodField()
-
-    class Meta:
-        model = ParentOrganization
-        fields = '__all__'
-
-    def get_children(self, obj):
-        return LimitedOrganizationSerializer(Organization.objects.filter(parent=obj), many=True).data
