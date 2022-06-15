@@ -99,13 +99,12 @@ class Organization(models.Model):
     logo = models.ImageField(upload_to='media/logos', blank=True)
 
     class Meta:
-        ordering = ('parent__name', 'name',)
+        ordering = ('parent__exact', 'name',)
 
     def save(self):
         super().save()
-        if self.id:
-            self.set_children_focuses()
-            
+
+    def get_from_parents(self):
         if self.parent:
             if not self.logo:
              self.logo = self.parent.logo

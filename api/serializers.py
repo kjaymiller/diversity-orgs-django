@@ -30,7 +30,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
         fields = '__all__'
-        depth = 1
+        exclude = ('logo', )
+        extra_kwargs = {'name': {'required': False}}
 
 class LimitedOrganizationSerializer(serializers.HyperlinkedModelSerializer):
     location = serializers.StringRelatedField()

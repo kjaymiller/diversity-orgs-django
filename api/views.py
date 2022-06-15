@@ -46,21 +46,29 @@ class OrgMapQuerySet(viewsets.ModelViewSet):
                 })
 
 
-class FeaturedOrganizations(viewsets.ReadOnlyModelViewSet):
-    queryset = Organization.objects \
-        .filter(parent__is_featured=True) \
-        
-    serializer_class = serializers.OrganizationMappingSerializer
-
-    def list(self, *args, **kwargs):
-        context = super().list(*args, **kwargs)
-        return Response({
-                "type": "FeatureCollection",
-                "features": [x['coords'] for x in context.data]
-                })
-
-
 class OrganizationDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Organization.objects.all()
     lookup_field = 'name'
     serializer_class = serializers.OrganizationSerializer
+
+
+class OrganizationListView(generics.ListCreateAPIView):
+    queryset = Organization.objects.all()
+    serializer_class = serializers.OrganizationSerializer
+
+class OrganizerListView(generics.ListCreateAPIView):
+    serializer_class = serializers.OrganizationSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.request.user.organizations.all()
+        
+class OrganizerDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """View for returning the organizer data"""
+    authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.OrganizationSerializer
+
+    def get_queryset(self):
+        return self.request.user.organizations.all()
