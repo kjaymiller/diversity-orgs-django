@@ -6,16 +6,16 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounts', '0003_remove_customuser_is_organizer_and_more'),
+        ("accounts", "0003_remove_customuser_is_organizer_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='customuser',
-            options={'verbose_name': 'user', 'verbose_name_plural': 'users'},
+            name="customuser",
+            options={"verbose_name": "user", "verbose_name_plural": "users"},
         ),
         migrations.AlterModelTable(
-            name='customuser',
+            name="customuser",
             table=None,
         ),
     ]

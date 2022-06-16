@@ -22,38 +22,38 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET', 'insecure-do-not-use-this-in-production')
+SECRET_KEY = os.environ.get("DJANGO_SECRET", "insecure-do-not-use-this-in-production")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', True)
+DEBUG = os.environ.get("DJANGO_DEBUG", True)
 
-ALLOWED_HOSTS = [os.environ.get('SITE_HOSTNAME', 'localhost')]
+ALLOWED_HOSTS = [os.environ.get("SITE_HOSTNAME", "localhost")]
 
 # Application definition
 
 INSTALLED_APPS = [
-    'rest_framework',
-    'rest_framework.authtoken',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders',
-    'org_pages.apps.OrgPagesConfig', # Orgs
-    'accounts' # Accounts App,
+    "rest_framework",
+    "rest_framework.authtoken",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "corsheaders",
+    "org_pages.apps.OrgPagesConfig",  # Orgs
+    "accounts",  # Accounts App,
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -62,30 +62,30 @@ CORS_ALLOW_ALL_ORIGINS = True
 #        'https://diversityorgsstorage.blob.core.windows.net',
 # )
 
-ROOT_URLCONF = 'diversity_orgs.urls'
+ROOT_URLCONF = "diversity_orgs.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'diversity_orgs.wsgi.application'
+WSGI_APPLICATION = "diversity_orgs.wsgi.application"
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ]
 }
 
@@ -93,16 +93,16 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 db_host = f"{os.environ.get('POSTGRES_DBHOST')}.postgres.database.azure.com"
 
-if not os.environ.get('POSTGRES_DBHOST', None):
-    db_host = 'localhost'
+if not os.environ.get("POSTGRES_DBHOST", None):
+    db_host = "localhost"
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("POSTGRES_DBNAME", "test_db_admin"), 
-        'USER': os.environ.get("POSTGRES_DBUSER", "postgres"), 
-        'PASSWORD': os.environ.get("POSTGRES_DBPASS", "password"), 
-        'HOST': db_host,
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRES_DBNAME", "test_db_admin"),
+        "USER": os.environ.get("POSTGRES_DBUSER", "postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_DBPASS", "password"),
+        "HOST": db_host,
     }
 }
 
@@ -111,16 +111,16 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -128,8 +128,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "en-us"
+TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
@@ -137,21 +137,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-AZURE_ACCOUNT_NAME = os.environ.get('AZ_STORAGE_ACCOUNT_NAME')
-AZURE_STORAGE_KEY = os.environ.get('AZ_STORAGE_KEY', False)
-AZURE_MEDIA_CONTAINER = os.environ.get('AZURE_MEDIA_CONTAINER', 'media')
-AZURE_STATIC_CONTAINER = os.environ.get('AZURE_STATIC_CONTAINER', 'static')
-MEDIA_URL = os.environ.get('AZ_MEDIA_URL', 'media')
-DEFAULT_FILE_STORAGE = 'backend.azurestorage.AzureMediaStorage'
-STATICFILES_STORAGE  = 'backend.azurestorage.AzureStaticStorage'
-STATIC_URL = os.environ.get('AZ_STATIC_URL', '/static/')
-STATIC_ROOT=  BASE_DIR / 'static'
+AZURE_ACCOUNT_NAME = os.environ.get("AZ_STORAGE_ACCOUNT_NAME")
+AZURE_STORAGE_KEY = os.environ.get("AZ_STORAGE_KEY", False)
+AZURE_MEDIA_CONTAINER = os.environ.get("AZURE_MEDIA_CONTAINER", "media")
+AZURE_STATIC_CONTAINER = os.environ.get("AZURE_STATIC_CONTAINER", "static")
+MEDIA_URL = os.environ.get("AZ_MEDIA_URL", "media")
+DEFAULT_FILE_STORAGE = "backend.azurestorage.AzureMediaStorage"
+STATICFILES_STORAGE = "backend.azurestorage.AzureStaticStorage"
+STATIC_URL = os.environ.get("AZ_STATIC_URL", "/static/")
+STATIC_ROOT = BASE_DIR / "static"
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AZURE_MAPS_KEY=os.environ.get('AZURE_MAPS_KEY', False)
+AZURE_MAPS_KEY = os.environ.get("AZURE_MAPS_KEY", False)
 AUTH_USER_MODEL = "accounts.CustomUser"

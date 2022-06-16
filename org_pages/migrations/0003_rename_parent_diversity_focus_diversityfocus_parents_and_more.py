@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('org_pages', '0002_organization_is_featured_alter_organization_parent_and_more'),
+        ("org_pages", "0002_organization_is_featured_alter_organization_parent_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='diversityfocus',
-            old_name='parent_diversity_focus',
-            new_name='parents',
+            model_name="diversityfocus",
+            old_name="parent_diversity_focus",
+            new_name="parents",
         ),
         migrations.AddField(
-            model_name='technologyfocus',
-            name='parents',
-            field=models.ManyToManyField(blank=True, to='org_pages.technologyfocus'),
+            model_name="technologyfocus",
+            name="parents",
+            field=models.ManyToManyField(blank=True, to="org_pages.technologyfocus"),
         ),
     ]

@@ -12,21 +12,22 @@ from .models import (
 registries = (
     TechnologyFocus,
     DiversityFocus,
-    )
+)
 
 
 @admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'parent', 'location')
-    list_filter = ('location__country',)
-    search_fields = ('name', 'parent__name', 'location__name')
-    prepopulated_fields = {'slug': ('name',)}
+    list_display = ("name", "parent", "location")
+    list_filter = ("location__country",)
+    search_fields = ("name", "parent__name", "location__name")
+    prepopulated_fields = {"slug": ("name",)}
+
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
-    list_filter = ('country',)
-    list_display = ('name', 'region', 'country')
-    search_fields = ('location__name',)
+    list_filter = ("country",)
+    list_display = ("name", "region", "country")
+    search_fields = ("location__name",)
 
 
 for registry in registries:

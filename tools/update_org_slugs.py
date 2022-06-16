@@ -10,7 +10,7 @@ for org in org_models.Organization.objects.all():
     org.save()
 
 
-for orgs in (org_models.Organization):
+for orgs in org_models.Organization:
     for org in orgs.objects.filter(slug__isnull=True):
         org.slug = slugify(org.name)
         org.save()

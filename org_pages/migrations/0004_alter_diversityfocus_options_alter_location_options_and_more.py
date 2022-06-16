@@ -6,24 +6,24 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('org_pages', '0003_rename_parent_diversity_focus_diversityfocus_parents_and_more'),
+        ("org_pages", "0003_rename_parent_diversity_focus_diversityfocus_parents_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='diversityfocus',
-            options={'ordering': ('name',), 'verbose_name_plural': 'Diversity Focuses'},
+            name="diversityfocus",
+            options={"ordering": ("name",), "verbose_name_plural": "Diversity Focuses"},
         ),
         migrations.AlterModelOptions(
-            name='location',
-            options={'ordering': ('country', 'region', 'name')},
+            name="location",
+            options={"ordering": ("country", "region", "name")},
         ),
         migrations.AlterModelOptions(
-            name='organization',
-            options={'ordering': ('parent__name', 'name')},
+            name="organization",
+            options={"ordering": ("parent__name", "name")},
         ),
         migrations.AlterModelOptions(
-            name='technologyfocus',
-            options={'ordering': ['name'], 'verbose_name_plural': 'Technology Focuses'},
+            name="technologyfocus",
+            options={"ordering": ["name"], "verbose_name_plural": "Technology Focuses"},
         ),
     ]

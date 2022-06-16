@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('org_pages', '0004_alter_diversityfocus_options_alter_location_options_and_more'),
-        ('accounts', '0002_remove_apiuser_parent_organizations'),
+        ("org_pages", "0004_alter_diversityfocus_options_alter_location_options_and_more"),
+        ("accounts", "0002_remove_apiuser_parent_organizations"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='customuser',
-            name='is_organizer',
+            model_name="customuser",
+            name="is_organizer",
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='organizations',
-            field=models.ManyToManyField(blank=True, to='org_pages.organization'),
+            model_name="customuser",
+            name="organizations",
+            field=models.ManyToManyField(blank=True, to="org_pages.organization"),
         ),
     ]

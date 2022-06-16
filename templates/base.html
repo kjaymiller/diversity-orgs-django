@@ -14,10 +14,10 @@
     {% block head %}{% endblock %}
 </head>
 <body {% if map %}onload="GetMap()"{% endif %}>
-    <div class="mx-auto mx-2 container">
+    <div class="lg:mx-auto mx-4 lg:container">
         <div class="mt-5 mb-2 p-2 flex flex-wrap">
-            <h1 class="md:text-xl lg:text-5xl font-bold mx-1"><a href="/">DiversityOrgs.Tech</a>
-            <small class="text-xs xl:text-sm font-light">Beta</small></a></h1>
+            <h1 class="text-2xl lg:text-5xl font-bold mx-1"><a href="/">DiversityOrgs.Tech</a>
+            <small class="text-sm xl:text-sm font-light">Beta</small></a></h1>
         </div>
 
         {% include 'assets/search.html' %}

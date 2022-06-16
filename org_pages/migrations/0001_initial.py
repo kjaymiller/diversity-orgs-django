@@ -8,84 +8,129 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DiversityFocus',
+            name="DiversityFocus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
-                ('description', models.TextField(blank=True)),
-                ('parent_diversity_focus', models.ManyToManyField(blank=True, to='org_pages.diversityfocus')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=200)),
+                ("description", models.TextField(blank=True)),
+                ("parent_diversity_focus", models.ManyToManyField(blank=True, to="org_pages.diversityfocus")),
             ],
             options={
-                'verbose_name_plural': 'Diversity Focuses',
+                "verbose_name_plural": "Diversity Focuses",
             },
         ),
         migrations.CreateModel(
-            name='Location',
+            name="Location",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(blank=True, max_length=200, null=True)),
-                ('region', models.CharField(blank=True, max_length=250, null=True)),
-                ('country', models.CharField(blank=True, max_length=250, null=True)),
-                ('base_query', models.CharField(blank=True, max_length=250)),
-                ('latitude', models.DecimalField(blank=True, decimal_places=5, max_digits=9, null=True, unique=True)),
-                ('longitude', models.DecimalField(blank=True, decimal_places=5, max_digits=9, null=True, unique=True)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(blank=True, max_length=200, null=True)),
+                ("region", models.CharField(blank=True, max_length=250, null=True)),
+                ("country", models.CharField(blank=True, max_length=250, null=True)),
+                ("base_query", models.CharField(blank=True, max_length=250)),
+                ("latitude", models.DecimalField(blank=True, decimal_places=5, max_digits=9, null=True, unique=True)),
+                ("longitude", models.DecimalField(blank=True, decimal_places=5, max_digits=9, null=True, unique=True)),
             ],
             options={
-                'ordering': ('name', 'region', 'country'),
+                "ordering": ("name", "region", "country"),
             },
         ),
         migrations.CreateModel(
-            name='TechnologyFocus',
+            name="TechnologyFocus",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=200)),
             ],
             options={
-                'verbose_name_plural': 'Technology Focuses',
+                "verbose_name_plural": "Technology Focuses",
             },
         ),
         migrations.CreateModel(
-            name='ParentOrganization',
+            name="ParentOrganization",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField(max_length=200, null=True, unique=True)),
-                ('name', models.CharField(max_length=200, unique=True)),
-                ('description', models.TextField(blank=True)),
-                ('featured', models.BooleanField(default=False)),
-                ('url', models.URLField(blank=True)),
-                ('social_links', models.TextField(blank=True)),
-                ('events_link', models.URLField(blank=True)),
-                ('online_only', models.BooleanField(default=False)),
-                ('code_of_conduct', models.URLField(blank=True)),
-                ('logo', models.ImageField(blank=True, upload_to='media/logos/35df7c9e-9d9c-44e2-a17b-650cf01e1307/')),
-                ('diversity_focus', models.ManyToManyField(blank=True, related_name='org_diversity_focus', to='org_pages.diversityfocus')),
-                ('location', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='org_pages.location')),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='org_pages.parentorganization')),
-                ('technology_focus', models.ManyToManyField(blank=True, related_name='org_technology_focus', to='org_pages.technologyfocus')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("slug", models.SlugField(max_length=200, null=True, unique=True)),
+                ("name", models.CharField(max_length=200, unique=True)),
+                ("description", models.TextField(blank=True)),
+                ("featured", models.BooleanField(default=False)),
+                ("url", models.URLField(blank=True)),
+                ("social_links", models.TextField(blank=True)),
+                ("events_link", models.URLField(blank=True)),
+                ("online_only", models.BooleanField(default=False)),
+                ("code_of_conduct", models.URLField(blank=True)),
+                ("logo", models.ImageField(blank=True, upload_to="media/logos/35df7c9e-9d9c-44e2-a17b-650cf01e1307/")),
+                (
+                    "diversity_focus",
+                    models.ManyToManyField(
+                        blank=True, related_name="org_diversity_focus", to="org_pages.diversityfocus"
+                    ),
+                ),
+                (
+                    "location",
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="org_pages.location"
+                    ),
+                ),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="org_pages.parentorganization",
+                    ),
+                ),
+                (
+                    "technology_focus",
+                    models.ManyToManyField(
+                        blank=True, related_name="org_technology_focus", to="org_pages.technologyfocus"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Organization',
+            name="Organization",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('slug', models.SlugField(max_length=200, null=True, unique=True)),
-                ('name', models.CharField(max_length=200, unique=True)),
-                ('code_of_conduct', models.URLField(blank=True)),
-                ('description', models.TextField(blank=True)),
-                ('url', models.URLField(blank=True, null=True)),
-                ('social_links', models.TextField(blank=True)),
-                ('events_link', models.URLField(blank=True)),
-                ('online_only', models.BooleanField(default=False)),
-                ('logo', models.ImageField(blank=True, upload_to='media/logos')),
-                ('diversity_focus', models.ManyToManyField(blank=True, related_name='parent_org_diversity_focus', to='org_pages.diversityfocus')),
-                ('location', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='org_pages.location')),
-                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='org_pages.parentorganization')),
-                ('technology_focus', models.ManyToManyField(blank=True, related_name='parent_org_technology_focus', to='org_pages.technologyfocus')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("slug", models.SlugField(max_length=200, null=True, unique=True)),
+                ("name", models.CharField(max_length=200, unique=True)),
+                ("code_of_conduct", models.URLField(blank=True)),
+                ("description", models.TextField(blank=True)),
+                ("url", models.URLField(blank=True, null=True)),
+                ("social_links", models.TextField(blank=True)),
+                ("events_link", models.URLField(blank=True)),
+                ("online_only", models.BooleanField(default=False)),
+                ("logo", models.ImageField(blank=True, upload_to="media/logos")),
+                (
+                    "diversity_focus",
+                    models.ManyToManyField(
+                        blank=True, related_name="parent_org_diversity_focus", to="org_pages.diversityfocus"
+                    ),
+                ),
+                (
+                    "location",
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to="org_pages.location"
+                    ),
+                ),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="org_pages.parentorganization",
+                    ),
+                ),
+                (
+                    "technology_focus",
+                    models.ManyToManyField(
+                        blank=True, related_name="parent_org_technology_focus", to="org_pages.technologyfocus"
+                    ),
+                ),
             ],
         ),
     ]

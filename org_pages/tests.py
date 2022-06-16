@@ -12,15 +12,14 @@ class OrganizationPageTest(TestCase):
         )
 
     def get_response(self):
-        response = self.client.get('/')
+        response = self.client.get("/")
         return response
 
     def test_org_page_status_code(self):
         self.assertEqual(self.get_response().status_code, 200)
 
     def test_org_page_template(self):
-        self.assertTemplateUsed(self.get_response(), 'org_list.html')
+        self.assertTemplateUsed(self.get_response(), "org_list.html")
 
     def test_org_page_contains_org_name(self):
         self.assertContains(self.get_response(), self.org.name)
-
