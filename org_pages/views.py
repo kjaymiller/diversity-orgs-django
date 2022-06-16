@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView
 from django.conf import settings
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from .models import (
     DiversityFocus,

@@ -6,6 +6,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.views import APIView
 from org_pages.models import Organization
 import api.serializers as serializers
+from django.db.models import Q
 # Create your views here.
 
 class ExampleView(APIView):
@@ -24,6 +25,7 @@ class ExampleView(APIView):
         content['msg'] = f"Hello, {request.user.username}"
 
         return Response(content)
+
 
 class OrgMapQuerySet(viewsets.ModelViewSet):
     """View for returning the map organization data"""
@@ -56,12 +58,34 @@ class OrganizationListView(generics.ListCreateAPIView):
     queryset = Organization.objects.all()
     serializer_class = serializers.OrganizationSerializer
 
+
+class LocationOrganizationListView(generics.ListAPIView):
+    serializer_class = serializers.OrganizationSerializer
+
+    def get_queryset(self):
+        base_params = self.request.query_params.dict()
+        orgs = Organization.objects.all()
+        if city:=base_params.get('city'):
+            print(f"searching for {city=}")
+            orgs = orgs.filter(location__name=city)
+        if region:=base_params.get('region'):
+            orgs = orgs.filter(location__region=region)
+        if country:=base_params.get('country'):
+            orgs = orgs.filter(location__country__icontains=country)
+        return orgs
+    
 class OrganizerListView(generics.ListCreateAPIView):
     serializer_class = serializers.OrganizationSerializer
     authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        if self.request.data.get('include_children', False):
+            return Organization.objects.filter(
+                Q(parent__id__in=self.request.user.organizations.values('id')) | \
+                Q(id__in=self.request.user.organizations.values('id')),
+            )
+
         return self.request.user.organizations.all()
         
 class OrganizerDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -71,4 +95,7 @@ class OrganizerDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.OrganizationSerializer
 
     def get_queryset(self):
-        return self.request.user.organizations.all()
+        return Organization.objects.filter(
+            Q(id__in=self.request.user.organizations.values('id')) | \
+            Q(parent_id__in=self.request.user.organizations.values('id')),
+        )

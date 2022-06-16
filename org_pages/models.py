@@ -99,7 +99,7 @@ class Organization(models.Model):
     logo = models.ImageField(upload_to='media/logos', blank=True)
 
     class Meta:
-        ordering = ('parent__exact', 'name',)
+        ordering = ('name',)
 
     def save(self):
         super().save()
