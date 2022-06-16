@@ -29,9 +29,9 @@ class OrganizationMappingSerializer(serializers.ModelSerializer):
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        fields = '__all__'
         exclude = ('logo', )
         extra_kwargs = {'name': {'required': False}}
+        depth = 1
 
 class LimitedOrganizationSerializer(serializers.HyperlinkedModelSerializer):
     location = serializers.StringRelatedField()
