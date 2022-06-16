@@ -11,47 +11,142 @@
             renderWorldCopies: true,
             view: 'Auto',
             style: 'road',
-            showLogo: true,
+            showLogo: false,
             showFeedbackLink: true,
             zoom: 1,
+            minZoom: 1,
            // Add your Azure Maps primary subscription key. https://aka.ms/am-primaryKey
            authOptions: {
                authType: 'subscriptionKey',
                subscriptionKey: '{{AZURE_MAPS_KEY}}'
            }
        });
-       
+       popup = new atlas.Popup();
        //Wait until the map resources are ready.
        map.events.add('ready', function () {
         var datasource = new atlas.source.DataSource(null, {
             cluster: true,
-            clusterRadius: 25,
+            clusterRadius: 45,
             clusterMaxZoom: 15,
-            clusterMinZoom: 10
+            clusterMinZoom: 10,
+            clusterProperties: {
+                "clusterName": ["has", "name"]
+            }
         }
         );
+
         map.sources.add(datasource);
         {% for sprite in map_sprites %}
           map.imageSprite.add('{{sprite.0 | escapejs}}', '{{sprite.1 | escapejs}}').then(function(){})
         {% endfor %}
-        var resultLayer = new atlas.layer.SymbolLayer(datasource, null, {
+
+        // The Bubble Layer is used to display the bubbles of Clusters
+        var clusterBubbleLayer = new atlas.layer.BubbleLayer(datasource, null, {
+            radius: 20,
+            color: [
+                'step',
+                ['get', 'point_count'],
+                "#666AE8",
+                11, "#A366E8"],
+            strokeWidth: 0,
+            filter: ['has', 'point_count']
+        });
+
+        var bubbleTextLayer = new atlas.layer.SymbolLayer(datasource, null, {
             iconOptions: {
-                image: ['get', 'logo'],
-                anchor: 'center',
-                allowOverlap: true,
-                size: 0.05,
+              image: 'none' //Hide the icon image.
             },
             textOptions: {
-                anchor: "top"
+              textField: ['get', 'point_count_abbreviated'],
+              offset: [0, 0.4],
+              color: 'white'
             }
+          });
+
+          
+        var iconLayer = new atlas.layer.SymbolLayer(datasource, null, {
+            iconOptions: {
+              image: ['get', 'logo'], //Hide the icon image
+              size: 0.05
+            },
+            filter: ['!', ['has', 'point_count' ]]
         });
-        
-        map.layers.add(resultLayer);
+
+        map.layers.add([clusterBubbleLayer, bubbleTextLayer, iconLayer]);
+
+        map.events.add('contextmenu', iconLayer, showSingleLinkPopup)
+        map.events.add('click', clusterBubbleLayer, showBubblePopup)
+        map.events.add('contextmenu', clusterBubbleLayer, clickToZoom)
+        map.events.add('click', iconLayer, singleLinkClick),
+        map.events.add('zoom', clusterBubbleLayer, function () { popup.close(map)})
+
         map.controls.add(new atlas.control.ZoomControl(), {
             position: 'bottom-right'
         });
+        datasource.importDataFromUrl("/api/map?format=json&{{map | escapejs}}")
+        function singleLinkClick(e) {            
+            window.location.href = e.shapes[0].getProperties().url
+        }
+        function showBubblePopup(e) {
+            var cluster = e.shapes[0];
+            var position = cluster.geometry.coordinates;
+            var entries = datasource.getClusterLeaves(cluster.properties.cluster_id, 50).then(function(endpoint){
+                var html = [
+                    "<div class='popup-content bg-slate-200 p-2'>",
+                    `<h3 class="font-bold">${endpoint.length} Orgs</h3>`
+                    ];
 
-      datasource.importDataFromUrl("/api/map?format=json&{{map | escapejs}}")
-  });
-}
+                if (endpoint.length > 10) {
+                    html.push(`<h2>Right-Click Bubble to Zoom in</h2>`)
+                } else {
+                endpoint.forEach(e =>{
+                    html.push(`<h1 class="hover:underline"><a href="${e.getProperties().url}">${e.getProperties().name}</a></h1>`);
+                    });
+                }
+                html.push("</div>");
+
+                popup.setPopupOptions({
+                    content: html.join(""),
+                    position: position,
+                    pixelOffset: [0, 40],
+                    draggable: true,
+                    showPointer: false
+                });
+            popup.open(map);
+        });
+        };
+
+        function clickToZoom(e){
+            var cluster = e.shapes[0];
+            var position = cluster.geometry.coordinates;
+            var zoom = datasource.getClusterExpansionZoom(cluster.properties.cluster_id).then(
+                function(zoom){
+                    map.setCamera({
+                        center: position,
+                        zoom: zoom,
+                        type: 'ease',
+                        duration: 200
+                    });
+                }
+            );
+        }
+
+        function showSingleLinkPopup(e) {
+            var features = e.shapes[0].getProperties();
+            var position = e.shapes[0].getCoordinates();
+            var popupContent = `<div class="popup-content p-2">
+            <h3 class="hover:underline"><a href="${features.url}">${features.name}</a></h3>
+            </div>`;
+            
+            console.log(features)
+            popup.setPopupOptions({
+                content: popupContent,
+                position: position,
+                offset: [0, -40],
+                draggable: true,
+                showPointer: false
+            });
+            popup.open(map);
+        };
+})};
 </script>
