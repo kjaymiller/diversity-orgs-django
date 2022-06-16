@@ -27,7 +27,7 @@ class OrganizationAdmin(admin.ModelAdmin):
 class LocationAdmin(admin.ModelAdmin):
     list_filter = ("country",)
     list_display = ("name", "region", "country")
-    search_fields = ("location__name",)
+    search_fields = ("name", "region", "country")
 
 
 for registry in registries:
