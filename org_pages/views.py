@@ -47,18 +47,19 @@ class SearchResultsView(ListView):
         # Create vectors for search
         query = SearchQuery(self.request.GET.get("q"), search_type="websearch")
         vector = (
-            SearchVector("diversity_focus__name", weight="C")
+            SearchVector("diversity_focus__name", weight="B")
             + SearchVector("technology_focus__name", weight="B")
             + SearchVector("location__name", weight="C")
             + SearchVector("location__region", weight="C")
-            + SearchVector("location__country", weight="B")
+            + SearchVector("location__country", weight="C")
         )
         queryset = (
             Organization.objects.annotate(
                 rank=SearchRank(vector, query, weights=[0.1, 0.3, 0.6, 1.0]),
             )
-            .filter(rank__gte=0.55)
+            .filter(rank__gte=0.4)
             .order_by("-rank")
+            .distinct()
         )
         return queryset
 
