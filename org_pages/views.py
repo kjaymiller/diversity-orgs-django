@@ -80,18 +80,25 @@ class OrgListView(ListView):
 
 
 class OrgDetailView(DetailView):
-    template_name = "org_detail.html"
+    template_name = "orgs/detail.html"
     model = Organization
     form_class = CreateOrgForm
+    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        if not self.request.user.is_authenticated:
+            context['is_organizer'] = False
+        else:
+            context['is_organizer'] = self.object in self.request.user.organizations.all()
 
         if children := self.model.objects.filter(parent=self.object).exclude(location=None):
             context["children"] = children.order_by("location__country", "location__name")
             context["map"] = f"parent={self.object.pk}"
             context["map_sprites"] = [(self.object.slug, self.object.logo.url)]
             context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
-
+            
         else:
             diversity_focuses = []
 

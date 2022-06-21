@@ -4,7 +4,6 @@ import org_pages.views as views
 urlpatterns = [
     path("", views.HomePageView.as_view(), name="home"),
     path("search/", views.SearchResultsView.as_view(), name="search"),
-    path("orgs/", views.OrgListView.as_view(), name="orgs"),
     path("orgs/create", views.CreateOrgView.as_view(), name="create_org"),
     path("orgs/<slug:slug>", views.OrgDetailView.as_view(), name="org_detail"),
     path("orgs/<slug:slug>/update", views.UpdateOrgView.as_view(), name="update_org"),

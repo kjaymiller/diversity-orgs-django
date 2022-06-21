@@ -18,7 +18,13 @@
     {% endif %}
 
         <div>
-            <h1 class="text-3xl">{{object.name}}</h1>
+            <h1 class="text-3xl my-2">{{object.name}}
+                {% if is_organizer %}
+                    <span class="p-2 m-2 bg-gradient-to-br from-blue-100 to-indigo-200 shadow hover:shadow-lg rounded-full text-sm">
+                        <a href="{% url "update_org" object.slug %}">Edit</a>
+                    </span>
+                {% endif %}
+            </h1>
             <small class="py-2 p-1"><a href="{{object.url}}">{{object.url}}</a></small>
             <div class="flex items-baseline mr-3">
                 {% if object.diversity_focus.all %}
