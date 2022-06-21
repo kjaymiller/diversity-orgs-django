@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .forms import CustomUserCreationForm, AdminUserChangeForm
 from .models import CustomUser
 from django.contrib.auth.admin import UserAdmin
 
@@ -8,7 +8,7 @@ from django.contrib.auth.admin import UserAdmin
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomUserCreationForm
-    form = CustomUserChangeForm
+    form = AdminUserChangeForm
     model = CustomUser
     list_display = (
         "email",

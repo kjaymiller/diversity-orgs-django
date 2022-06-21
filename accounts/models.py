@@ -1,6 +1,7 @@
 """The User Model is Slightly Complex but Ultimate Allows for some flexibility for future development."""
 
 from django.db import models
+from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import AbstractUser
 from org_pages.models import Organization
 
@@ -12,3 +13,9 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+    def __create__(self, *args, **kwargs):
+        super().__create(*args, **kwargs)
+        Token.objects.create(user=self)
+

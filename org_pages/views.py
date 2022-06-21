@@ -1,4 +1,6 @@
-from django.views.generic import ListView, DetailView
+from django.http import Http404
+from django.views.generic import ListView, DetailView, UpdateView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.db.models import Q
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
@@ -7,6 +9,7 @@ from .models import (
     Organization,
     Location,
 )
+from .forms import OrgForm, CreateOrgForm
 
 # Create your views here.
 class HomePageView(ListView):
@@ -79,7 +82,7 @@ class OrgListView(ListView):
 class OrgDetailView(DetailView):
     template_name = "org_detail.html"
     model = Organization
-
+    form_class = CreateOrgForm
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -117,6 +120,33 @@ class OrgDetailView(DetailView):
             context["other_orgs"] = other_orgs
         return context
 
+
+class CreateOrgView(LoginRequiredMixin, CreateView):
+    template_name = "orgs/create.html"
+    model = Organization
+    form_class = CreateOrgForm
+
+
+class UpdateOrgView(UpdateView, LoginRequiredMixin):
+    """update form if organization is in organization"""
+    template_name = "orgs/update.html"
+    model = Organization
+    form_class = OrgForm
+
+    def dispatch(self, request, *args, **kwargs):
+        error = Http404("You must be an organization member to update an organization.")
+        if not self.request.user.is_authenticated:
+            raise Http404("You must be logged in to update an organization.")
+
+        obj = self.get_object()
+        if obj not in self.request.user.organizations.all():
+            raise error
+
+        if obj.parent and obj.parent not in self.request.user.organizations.all():
+            raise error
+
+        return super().dispatch(request, *args, **kwargs)
+    
 
 class LocationFilterView(ListView):
     template_name = "location_filter.html"

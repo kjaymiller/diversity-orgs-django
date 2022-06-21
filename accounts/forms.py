@@ -17,11 +17,19 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields["username"].help_text = None
 
 
+class AdminUserChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = "__all__"
+
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
-        fields = (
-            "username",
-            "email",
-            "organizations",
-        )
+        fields = ("username", "email", "organizations")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "border p-2 my-1 mx-3 w-96 focus:shadow"
+        self.fields["username"].help_text = None
+        self.fields.pop('password')

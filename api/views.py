@@ -1,4 +1,3 @@
-from tokenize import Token
 from django.views.generic.base import TemplateView
 from rest_framework.response import Response
 from rest_framework import viewsets, generics
