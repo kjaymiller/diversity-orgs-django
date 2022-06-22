@@ -1,7 +1,15 @@
 <div class="p-2 my-2 rounded-xl border"> 
     <h3 class="font-bold"><a href="{% url 'org_detail' org.pk %}">{{org}}</a></h3>
     <div class="flex">
+        <div>
+            {% if org.logo %}
+            <img src="{{org.logo.url}}" class="w-32 h-32" alt="{{org.name}} logo">
+            {% else %}
+            {% endif %}
+        </div>
+        <div>
         {%if org.parent %}<h4 class="mr-3">{{org.parent}}</h4>{% endif %}
         <h4 class="font-light">{{org.location}}</h4>
+        </div>
     </div>
 </div>
