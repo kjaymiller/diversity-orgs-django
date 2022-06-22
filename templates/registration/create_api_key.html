@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+    
+    {% block title %}
+        Request API Key
+    {% endblock %}
+    
+    {% block content %}
+        <h1 class="text-2xl font-bold mb-4">Request API Key</h1>
+       
+        <p>An API key gives you extended access to the diversityorgs.tech REST API.</p>
+        <p>If you are using the data from this site on another site or using the API to make changes to your organization. Please request an API key.</p>
+
+        <form action="{% url 'create-api-key' %}" method="POST">
+            {% csrf_token %}
+            <div class="my-6">
+            <input type="submit" class="mr-5 p-3 rounded hover:shadow-lg text-blue-100 bg-blue-700 font-bold" value="Request Key">
+            <a href="{% url 'account-update' %}" class="p-3 text-gray-800">Cancel</a>
+            </div>
+        </form>
+
+    {% endblock %}

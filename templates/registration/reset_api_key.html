@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+    
+    {% block title %}
+        WARNING: Reset API Key!
+    {% endblock %}
+    
+    {% block content %}
+        <h1 class="text-2xl font-bold mb-4">Confirm Key Reset</h1>
+        
+        <p class="my-4">Are you sure you want to <b class="text-red-500">DELETE</b> your existing API key and generate a new key?<p>
+        <p class="font-black"> YOUR OLD KEY WILL NO LONGER WORK.</p>
+        
+        <form action="{% url 'reset-api-key' %}" method="POST">
+            {% csrf_token %}
+            <div class="my-4">
+            <input type="submit" class="mr-5 text-red-500 font-thin" value="Reset Key">
+            <a href="{% url 'account-update' %}" class="p-3 bg-blue-200 rounded-lg">Cancel</a>
+            </div>
+        </form>
+
+    {% endblock %}

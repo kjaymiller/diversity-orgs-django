@@ -1,0 +1,17 @@
+{% if messages %}
+    {% for message in messages %}
+    {% if message.tags %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            <div class="w-full p-3 bg-green-200 rounded-lg">
+                <h2 class="text-green-700"><strong>Success:</strong> {{ message }}</h2>        
+            </div>
+        {% endif %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+            <div class="w-full p-3 bg-yellow-200 rounded-lg">
+                <h2 class="text-yellow-600"><strong>Warning:</strong> {{ message }}</h2>        
+            </div>
+        {% endif %}
+    {% endif %}
+    {% endfor %}
+</ul>
+{% endif %}
