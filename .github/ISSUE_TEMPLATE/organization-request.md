@@ -29,7 +29,7 @@ Please fill out the entries below. Leave Non-Applicable Items Blank
 	 - <YOUTUBE>
 	 - <OTHER SOCIAL LINKS>
 - **Events Page URL**: <Meetup/EventBrite/Bevy or Custom Events URL>
-- **Logo**: <URL of Logo or Page to Assets Download.>  (A local copy will be stored)
+- **Logo**: <URL TO LOGO or PAGE to ASSETS> (A local copy will be stored)
 
 ### Does this organization have chapters?
 Enter the Location and URL of each Location/Chapter (REPEAT FOR EACH LOCATION).
