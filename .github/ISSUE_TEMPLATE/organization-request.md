@@ -1,5 +1,5 @@
 ---
-name: Organization Request
+name: Add Organization
 about: Have an Organization that you would like to see added.
 title: "[ADD ORGANIZATION]: <ORGANIZATION NAME>"
 labels: organizations
