@@ -25,7 +25,7 @@ class AdminUserChangeForm(UserChangeForm):
 class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
-        fields = ("username", "email", "organizations")
+        fields = ("username", "email",)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
