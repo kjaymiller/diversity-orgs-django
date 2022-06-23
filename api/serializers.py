@@ -15,9 +15,7 @@ class OrganizationMappingSerializer(serializers.ModelSerializer):
                 return {
                     "type": "Feature",
                     "properties": {
-                        "parent_name": obj.parent.name,
                         "url": obj.get_absolute_url(),
-                        "logo": obj.parent.slug,
                         "name": obj.name,
                     },
                     "geometry": {"type": "Point", "coordinates": [obj.location.longitude, obj.location.latitude]},
