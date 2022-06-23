@@ -90,7 +90,7 @@ class Organization(models.Model):
         help_text="Name of the organization.",
         )
     code_of_conduct = models.URLField(
-        blank=True,
+        blank=True, verbose_name="Code of Conduct",
         help_text="URL to the code of conduct for the organization.",
         )
     description = models.TextField(
@@ -150,12 +150,11 @@ class Organization(models.Model):
         help_text="Is this organization a sub-organization of another org? NOTE:The Parent Org Must exist before this org can be created.",
     )
     technology_focus = models.ManyToManyField(
-        TechnologyFocus, blank=True,
-        related_name="parent_org_technology_focus",
+        TechnologyFocus, blank=True, related_name="parent_org_technology_focus",
         help_text="Technology focuses for the organization. If your org doesn't focus on a particular tech topic, Leave Blank",
     )
     logo = models.ImageField(
-        upload_to="media/logos", blank=True,
+        upload_to=gen_upload_path(), blank=True,
         help_text="Logo of the organization. Will be displayed on the organization's page.",
     )
 

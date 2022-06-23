@@ -20,7 +20,9 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_display = ("name", "parent", "location")
     list_filter = ("location__country",)
     search_fields = ("name", "parent__name", "location__name")
+    autocomplete_fields = ("parent", "location")
     prepopulated_fields = {"slug": ("name",)}
+
 
 
 @admin.register(Location)

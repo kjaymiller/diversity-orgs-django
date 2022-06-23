@@ -8,8 +8,26 @@ from .models import (
     DiversityFocus,
     Organization,
     Location,
+    TechnologyFocus,
 )
 from .forms import OrgForm, CreateOrgForm
+
+def is_organizer(user, org):
+    """Check if a user is authenticated and an organizer of an organization."""
+    if not user.is_authenticated:
+        return False
+
+    if org.parent and user in org.parent.organizers.all():
+        return True
+
+    if user in org.organizers.all():
+        return True
+
+    if user.is_superuser:
+        return True
+    
+    return False
+
 
 # Create your views here.
 class HomePageView(ListView):
@@ -19,8 +37,7 @@ class HomePageView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["featured_orgs"] = self.model.objects.filter(is_featured=True)
-        context["map"] = "parent__is_featured=True"
-        context["map_sprites"] = [(x.slug, x.logo.url) for x in context["featured_orgs"]]
+        context["map"] = "is_featured=True"
         context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
         return context
 
@@ -32,6 +49,9 @@ class SearchResultsView(ListView):
     def get_queryset(self):
 
         query = self.request.GET.get("q")
+
+        if name_match := Organization.objects.filter(name__iexact=query):
+            return name_match
 
         if name_match := Organization.objects.filter(name__icontains=query):
             return name_match
@@ -84,16 +104,11 @@ class OrgDetailView(DetailView):
     model = Organization
     form_class = CreateOrgForm
     
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
-        if not self.request.user.is_authenticated:
-            context['is_organizer'] = False
-        else:
-            context['is_organizer'] = self.object in self.request.user.organizations.all()
+        context['is_organizer'] = is_organizer(self.request.user, self.object) or self.request.user.is_superuser
 
-        if children := self.model.objects.filter(parent=self.object).exclude(location=None):
+        if children := self.model.objects.filter(parent=self.object):
             context["children"] = children.order_by("location__country", "location__name")
             context["map"] = f"parent={self.object.pk}"
             context["map_sprites"] = [(self.object.slug, self.object.logo.url)]
@@ -124,7 +139,7 @@ class OrgDetailView(DetailView):
 
             if technology_focuses:
                 other_orgs = other_orgs.filter(technology_focus__in=technology_focuses)
-            context["other_orgs"] = other_orgs
+            context["other_orgs"] = other_orgs.distinct()
         return context
 
 
@@ -132,28 +147,49 @@ class CreateOrgView(LoginRequiredMixin, CreateView):
     template_name = "orgs/create.html"
     model = Organization
     form_class = CreateOrgForm
+    
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+    def post(self, request):
+        super().post()
+        self.object.organizers.add(self.request.user)
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
 
 
-class UpdateOrgView(UpdateView, LoginRequiredMixin):
+
+class UpdateOrgView(LoginRequiredMixin, UpdateView):
     """update form if organization is in organization"""
     template_name = "orgs/update.html"
     model = Organization
     form_class = OrgForm
 
-    def dispatch(self, request, *args, **kwargs):
-        error = Http404("You must be an organization member to update an organization.")
-        if not self.request.user.is_authenticated:
-            raise Http404("You must be logged in to update an organization.")
-
-        obj = self.get_object()
-        if obj not in self.request.user.organizations.all():
-            raise error
-
-        if obj.parent and obj.parent not in self.request.user.organizations.all():
-            raise error
-
-        return super().dispatch(request, *args, **kwargs)
+    def get_initial(self, *args, **kwargs):
+        initial = super().get_initial(*args, **kwargs)
+        initial["diversity_focus"] = (", ").join([x.name for x in self.object.diversity_focus.all()])
+        initial["technology_focus"] = (", ").join([x.name for x in self.object.technology_focus.all()])
+        initial["organizers"] = (", ").join([x.email for x in self.object.organizers.all()])
+        if self.object.location:
+            location_fields = (
+                self.object.location.name,
+                self.object.location.region,
+                self.object.location.country,
+            )
+            initial['location'] = ", ".join([x for x in location_fields if x])
+        if self.object.parent:
+            initial['parent'] = self.object.parent.name
     
+        return initial
+
+        
+    def dispatch(self, request, *args, **kwargs):
+        """Raise a 404 if user is not an organizer."""
+        if  is_organizer(request.user, self.get_object()):
+            return super().dispatch(request, *args, **kwargs)
+        raise Http404("You must be an organization member to update an organization.")
+        
+
 
 class LocationFilterView(ListView):
     template_name = "location_filter.html"
@@ -171,16 +207,30 @@ class LocationFilterView(ListView):
 class DiversityFocusFilterView(ListView):
     template_name = "location_filter.html"
     model = Organization
+    paginate_by=20
 
     def get_queryset(self):
-        return Organization.objects.filter(location__pk=self.kwargs["region_pk"]).filter(
-            diversity_focus=self.kwargs["diversity"]
-        )
+        diversity=DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
+        queryset = Organization.objects.filter(diversity_focus=diversity)
+        if location:=self.request.GET.get('location', None):
+            return queryset.filter(location__pk=location) # Disconnect and filter by location
+
+        # The other checks are additive
+        if city:=self.request.GET.get('city', None):
+            queryset = queryset.filter(location__name=city)
+        if region:=self.request.GET.get('region', None):
+            queryset = queryset.filter(location__region=region)
+        if country:=self.request.GET.get('country', None):
+            queryset = queryset.filter(location__country=country)
+        
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["diversity"] = DiversityFocus.objects.get(pk=self.kwargs["diversity"])
-        context["location"] = Location.objects.get(pk=self.kwargs["location__pk"])
+        context["diversity"] = diversity=DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
+        if location:=self.request.GET.get('location', None):
+            context["location"] = Location.objects.get(pk=location)
+        
         return context
 
 
@@ -195,7 +245,7 @@ class TechnologyFocusFilterView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["technology"] = DiversityFocus.objects.get(pk=self.kwargs["technology"])
+        context["technology"] = TechnologyFocus.objects.get(pk=self.kwargs["technology"])
         context["location"] = Location.objects.get(pk=self.kwargs["region_pk"])
         return context
 
