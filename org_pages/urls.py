@@ -9,7 +9,7 @@ urlpatterns = [
     path("orgs/<slug:slug>/update", views.UpdateOrgView.as_view(), name="update_org"),
     path("filter/location/<int:pk>", views.LocationFilterView.as_view(), name="location_filter"),
     path(
-        "filter/location/<int:region_pk>/diversity/<str:diversity>",
+        "filter/diversity/<str:diversity>",
         views.DiversityFocusFilterView.as_view(),
         name="diversity_filter",
     ),

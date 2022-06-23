@@ -1,6 +1,22 @@
-<div class="p-1 my-1 hover:shadow hover:shadow-purple-200"> 
-    <div class="flex items-baseline border-b-2">
+<div class="flex items-center hover:shadow border rounded p-2 my-2">
+    {% if org.logo %}
+    <img class="w-24 rounded mr-2" src="{{ org.logo.url }}" alt="{{ org.name }}">
+    {% endif %}
+    <div>
     <h3 class="font-bold mr-1 text-lg"><a href="{{org.get_absolute_url}}">{{org}}</a></h3>
-        <h4 class="font-light">{{org.location}}</h4>
+    <div class="flex items-center">
+    <h3 class="font-bold pr-2">Diversity Focus:</h3>
+    {% for focus in org.diversity_focus.all %}
+        <h4 class="text-sm p-1 rounded hover:shadow bg-slate-50 rounded-full border">
+            {% load org_extras %}
+            {% if focus %}
+            <a href="/filter/diversity/{{focus}}{% if location %}{% urlparams location=location.pk %}{% endif %}">{{focus}}</a>
+            {% endif %}
+        </h4>
+    {% endfor %}
     </div>
-</div>
+    {% if org.location %}
+        <h4 class="font-light">{{org.location}}</h4>
+    {% endif %}
+    </div>
+    </div>

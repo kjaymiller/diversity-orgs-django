@@ -18,20 +18,24 @@
     {% endif %}
 
         <div>
-            <h1 class="text-3xl my-2">{{object.name}}
+            <div class="flex items-baseline">
+                <h1 class="text-3xl my-2">{{object.name}}</h1>
                 {% if is_organizer %}
-                    <span class="p-2 m-2 bg-gradient-to-br from-blue-100 to-indigo-200 shadow hover:shadow-lg rounded-full text-sm">
+                    <h2 class="border px-2 m-2 bg-gradient-to-br from-slate-50 to-slate-100 shadow hover:shadow-lg rounded-full text-sm">
                         <a href="{% url "update_org" object.slug %}">Edit</a>
-                    </span>
-                {% endif %}
-            </h1>
+                    </h2>
+                    {% endif %}
+                    <h2 class="text-red-400 font-thin">Report</h2>
+                </div>
             <small class="py-2 p-1"><a href="{{object.url}}">{{object.url}}</a></small>
             <div class="flex items-baseline mr-3">
                 {% if object.diversity_focus.all %}
                 <div class="flex items-baseline mr-3">
-                    <h3 class="font-bold">Diversity Focuses:</h3> 
+                    <h3 class="font-bold">Diversity Focuses:</h3>
+                    {% load org_extras %} 
                     {% for focus in object.diversity_focus.all %}
-                    <small class='mx-1'>{{focus.name}}</small>
+                        <small class='mx-1 border p-1 rounded-full bg-gradient-to-br from-slate-50 to-slate-100 shadow'>
+                            <a href="{% url 'diversity_filter' focus.name %}{% if object.location %}{% urlparams location=object.location.pk %}{% endif %}">{{focus.name}}</a></small>
                     {%endfor%}
                 </div>
                 {% endif %}
@@ -60,7 +64,12 @@
     <div class="">
         {% for org in children %}
         <div class="border-b-2 border-b-slate-100 py-1 my-3">
+            {% if org.location %}
             <a href="{{org.get_absolute_url}}" class="hover:italic">{{org.location}}</a>
+            {% endif %}
+            {% if org.online_only %}
+            <a href="{{org.get_absolute_url}}" class="hover:italic">{{org}} - Online</a>
+            {% endif %}
         </div>
         {% endfor %}
     </div>
