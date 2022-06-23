@@ -1,0 +1,33 @@
+
+<div class="my-3 flex justify-center items-baseline">
+    <span class="font-bold">Go to Page:</span>
+    {% if page_obj.has_previous %}
+        <a class="bg-slate-50 font-bold p-1 items-baseline mx-1 rounded border" href="?page=1">1</a>
+        <span class="mx-1">...</span>
+    {% endif %}
+    {% if page_obj.previous_page_number != 1 %}
+        <a class="mx-1" href="?page={{ page_obj.previous_page_number }}"><svg alt="previous" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pt-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+          </svg></a>
+    {% endif %}
+    
+        <span class="border rounded mx-1 p-2 bg-slate-50 font-bold">
+            Page {{ page_obj.number }}
+        </span>
+        {% if page_obj.has_next %}
+
+        <span class="w-3 mx-2">
+            <a class="font-bold" href="?page={{ page_obj.next_page_number }}">
+                <svg alt="next page" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pt-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+        </span>
+        
+        <span class="mx-1">
+            <a class="border mx-1 bg-slate-50 font-bold p-2" href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        </span>
+        {% endif %}
+
+    </span>
+</div>
