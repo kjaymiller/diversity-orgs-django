@@ -1,6 +1,6 @@
 <div class="flex items-center hover:shadow border rounded p-2 my-2">
     {% if org.logo %}
-    <img class="w-24 rounded mr-2" src="{{ org.logo.url }}" alt="{{ org.name }}">
+    <img class="w-48 rounded mr-2" src="{{ org.logo.url }}" alt="{{ org.name }}">
     {% endif %}
     <div>
     <h3 class="font-bold mr-1 text-lg"><a href="{{org.get_absolute_url}}">{{org}}</a></h3>

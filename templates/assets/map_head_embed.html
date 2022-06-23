@@ -26,9 +26,7 @@
        map.events.add('ready', function () {
         var datasource = new atlas.source.DataSource(null, {
             cluster: true,
-            clusterRadius: 45,
-            clusterMaxZoom: 15,
-            clusterMinZoom: 10,
+            clusterRadius: 1,
             clusterProperties: {
                 "clusterName": ["has", "name"]
             }
@@ -65,15 +63,12 @@
 
           
         var iconLayer = new atlas.layer.SymbolLayer(datasource, null, {
-            iconOptions: {
-              image: ['get', 'logo'], //Hide the icon image
-              size: 0.05
-            },
             filter: ['!', ['has', 'point_count' ]]
         });
 
         map.layers.add([clusterBubbleLayer, bubbleTextLayer, iconLayer]);
 
+        map.events.add('mouseover', iconLayer, showSingleLinkPopup)
         map.events.add('contextmenu', iconLayer, showSingleLinkPopup)
         map.events.add('click', clusterBubbleLayer, showBubblePopup)
         map.events.add('contextmenu', clusterBubbleLayer, clickToZoom)
@@ -108,7 +103,7 @@
                 popup.setPopupOptions({
                     content: html.join(""),
                     position: position,
-                    pixelOffset: [0, 40],
+                    pixelOffset: [0, 20],
                     draggable: true,
                     showPointer: false
                 });
@@ -136,9 +131,7 @@
             var position = e.shapes[0].getCoordinates();
             var popupContent = `<div class="popup-content p-2">
             <h3 class="hover:underline"><a href="${features.url}">${features.name}</a></h3>
-            </div>`;
-            
-            console.log(features)
+            </div>`;            
             popup.setPopupOptions({
                 content: popupContent,
                 position: position,
