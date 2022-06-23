@@ -8,7 +8,7 @@
     {% block title %}{% endblock %} DiversityOrgs.tech</title>
     {% load static %}
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
     <link href="{% static 'web/css/style.css' %}" rel="stylesheet">
     {% if map %}
         {% include 'assets/map_head_embed.html' %}
