@@ -1,25 +1,33 @@
 {% extends 'base.html' %}
+{% block head_content %}
+<h1 class="text-3xl font-bold my-4">Happy Juneteenth!!</h1>
+{% endblock %}
 {% block content %}
     <div class=my-4>
-        <h2 class="text-3xl font-extrabold">Featured Organizations</h2>
-        <div class="flex">
+        <h2 class="h-4 text-2xl font-extrabold my-4">Check out some featured orgs</h2>
+        <div class="grid grid-cols-4">
             {% for org in featured_orgs %}
-            <div class="h-48 w-72 mx-x my-3 flex items-center px-auto text-2xl">
+            <div class="h-64 w-642 m-auto m-3 text-2xl flex items-center">
                 {% if org.logo %}
                 <a href="{{org.get_absolute_url }}"> 
-                    <img src="{{org.logo.url}}" alt="{{org.name}}" class="mx-auto max-h-24 sm:w-full w-72 p-4 rounded" />            
+                    <img src="{{org.logo.url}}" alt="{{org.name}}" class="items-center mx-auto max-h-36 p-1 rounded" />            
+                </a>
+                
+                {% else %}
+
+                <a href="{{org.get_absolute_url}}"> 
+                    <h2 class="font-bold invisible lg:visible">{{org.name}}</h2>
                 </a>
                 {% endif %}
-                <a href="{{org.get_absolute_url }}"> 
-                <h2 class="font-bold invisible lg:visible">{{org.name}}</h2>
-                </a>
             </div>
             {% endfor %}
         </div>
     </div>
     
     <div class="my-4">
-        <h1 class="text-3xl">Feel like you belong</h1>
-        <p>Find and connect with organizations working empower, and underrepresented people in tech.</p>
+        <h1 class="text-3xl">What is DiversityOrgs.Tech</h1>
+        <p>This site helps you to find and connect with organizations working to empower, and underrepresented people in tech.</p>
+        <p>Connect with organizations of folks who share a lived and present experience that you may be facing in many different stages in your journey.</p>
+
     </div>
 {% endblock%}
