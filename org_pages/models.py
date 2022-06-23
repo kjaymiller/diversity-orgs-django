@@ -4,7 +4,7 @@ from uuid import uuid4
 from django.utils.text import slugify
 import httpx
 import os
-
+from accounts.models import CustomUser
 
 def gen_upload_path():
     return f"media/logos/{uuid4()}/"
@@ -55,7 +55,7 @@ class Location(models.Model):
             response = httpx.get(
                 url="https://atlas.microsoft.com/search/address/json",
                 params={
-                    "query": str(self),
+                    "query": str(self.base_query),
                     "limit": 1,
                     "subscription-key": os.environ.get("AZURE_MAPS_KEY"),
                     "api-version": "1.0",
@@ -81,24 +81,83 @@ class Location(models.Model):
 
 
 class Organization(models.Model):
-    slug = models.SlugField(max_length=200, unique=True, null=True)
-    name = models.CharField(max_length=200, unique=True)
-    code_of_conduct = models.URLField(blank=True)
-    description = models.TextField(blank=True)
-    diversity_focus = models.ManyToManyField(DiversityFocus, related_name="parent_org_diversity_focus", blank=True)
-    is_featured = models.BooleanField(default=False)
-    url = models.URLField(blank=True, null=True)
-    social_links = models.TextField(blank=True)
-    events_link = models.URLField(blank=True)
-    online_only = models.BooleanField(default=False)
-    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
-    parent = models.ForeignKey("self", on_delete=models.CASCADE, blank=True, null=True)
-    technology_focus = models.ManyToManyField(
-        TechnologyFocus,
+    slug = models.SlugField(
+        max_length=200, unique=True, null=True,
+        help_text="Slug will be generated automatically from the name of the organization.",
+        )
+    name = models.CharField(
+        max_length=200, unique=True,
+        help_text="Name of the organization.",
+        )
+    code_of_conduct = models.URLField(
         blank=True,
-        related_name="parent_org_technology_focus",
+        help_text="URL to the code of conduct for the organization.",
+        )
+    description = models.TextField(
+        blank=True,
+        help_text="Description of the organization. This will appear on the organization's page.",
+        )
+    diversity_focus = models.ManyToManyField(
+        DiversityFocus, related_name="parent_org_diversity_focus", blank=True,
+        help_text="Diversity focuses for the organization. Select as many as apply. The more specific the better. Examples: Black Women, LGBTQIA+",
     )
-    logo = models.ImageField(upload_to="media/logos", blank=True)
+    job_board = models.URLField(
+        blank=True,
+        help_text="URL to the job board for the organization.",
+    )
+    paid = models.BooleanField(
+        default=False,
+        help_text="Do members have to pay for membership?",
+    )
+    is_featured = models.BooleanField(
+        default=False,
+        help_text="(ADMINS ONLY) Is this organization featured on the home page?",
+    )
+    url = models.URLField(
+        blank=True, null=True,
+        help_text="URL to the organization's website.",
+    )
+    social_links = models.TextField(
+        blank=True,
+        help_text="Social media links for the organization. Put each url on a new line.",
+        )
+    events_link = models.URLField(
+        blank=True,
+        help_text="URL to the organization's events page.",
+    )
+    active = models.BooleanField(
+        default=True,
+        help_text="Is this organization active? Inactive organizations will be marked and filtered out.",
+    )
+    organizers = models.ManyToManyField(
+        CustomUser, blank=True, related_name="organizers",
+        help_text="Users who are organizers of this organization.",
+       )
+    reviewed = models.BooleanField(
+        default=False,
+        help_text="(ADMIN Only) Has this organization been reviewed?",
+    )
+    online_only = models.BooleanField(
+        default=False,
+        help_text="Is this organization only available online?",
+    )
+    location = models.ForeignKey(
+        Location, on_delete=models.SET_NULL, null=True, blank=True,
+        help_text="Location of the organization. Format: city, Optional(state/region), country",
+    )
+    parent = models.ForeignKey(
+        "self", on_delete=models.CASCADE, blank=True, null=True,
+        help_text="Is this organization a sub-organization of another org? NOTE:The Parent Org Must exist before this org can be created.",
+    )
+    technology_focus = models.ManyToManyField(
+        TechnologyFocus, blank=True,
+        related_name="parent_org_technology_focus",
+        help_text="Technology focuses for the organization. If your org doesn't focus on a particular tech topic, Leave Blank",
+    )
+    logo = models.ImageField(
+        upload_to="media/logos", blank=True,
+        help_text="Logo of the organization. Will be displayed on the organization's page.",
+    )
 
     class Meta:
         ordering = ("name",)
