@@ -44,9 +44,7 @@ class OrgMapQuerySet(viewsets.ModelViewSet):
         base_params.pop("format", None)
         orgs = (
             Organization.objects.filter(**base_params)
-            .filter(parent__isnull=False)
             .filter(location__isnull=False)
-            .filter(location__latitude__isnull=False)
         )
         return orgs
 
