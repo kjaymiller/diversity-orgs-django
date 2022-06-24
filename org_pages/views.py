@@ -190,6 +190,11 @@ class UpdateOrgView(LoginRequiredMixin, UpdateView):
         raise Http404("You must be an organization member to update an organization.")
         
 
+class ClaimOrgView(LoginRequiredMixin, UpdateView):
+    """Claim an organization if there are no organizers. This request must be reviewed."""
+    template_name = "orgs/update.html"
+    model = Organization
+    form_class = OrgForm
 
 class LocationFilterView(ListView):
     template_name = "location_filter.html"

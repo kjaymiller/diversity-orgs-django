@@ -47,7 +47,6 @@ class CreateAPIKey(LoginRequiredMixin, TemplateView):
         Token.objects.create(user=request.user)
         django.contrib.messages.success(request, 'API key has been created.')
         return redirect('account-update')
-
         
 class ResetAPIKey(LoginRequiredMixin, TemplateView):
     login_url = 'login'

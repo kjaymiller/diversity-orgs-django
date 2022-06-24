@@ -1,60 +1,95 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="p-5 border-b">
-    {% if object.location %}
-    <small class=""><a href="{{object.location.get_absolute_url}}">{{object.location}}</a></small>
-    {% endif %}
     
-    {% if object.online_only %}
-    <small class="">Online</small>
-    {% endif %}
-    
-    <div class="my-2 flex items-center">
-    {% if object.logo %}
-        <div>
+    <div class="border rounded p-2">
+        <div class="flex">
+        {% if object.logo %}
             <img src="{{object.logo.url}}" alt="Logo for {{object.name}}" class="max-h-24 p-4 mr-4 rounded" />
-        </div>
-    {% endif %}
-
+        {% endif %}
+        
         <div>
             <div class="flex items-baseline">
-                <h1 class="text-3xl my-2">{{object.name}}</h1>
+                <h1 class="text-2xl my-2 font-bold flex items-center">{{object.name}} {%if object.url %}<a class="mx-1" href="{{object.url}}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                    <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                </svg></a>{% endif %}</h1>
                 {% if is_organizer %}
-                    <h2 class="border px-2 m-2 bg-gradient-to-br from-slate-50 to-slate-100 shadow hover:shadow-lg rounded-full text-sm">
-                        <a href="{% url "update_org" object.slug %}">Edit</a>
-                    </h2>
-                    {% endif %}
-                    <h2 class="text-red-400 font-thin">Report</h2>
-                </div>
-            <small class="py-2 p-1"><a href="{{object.url}}">{{object.url}}</a></small>
-            <div class="flex items-baseline mr-3">
-                {% if object.diversity_focus.all %}
-                <div class="flex items-baseline mr-3">
-                    <h3 class="font-bold">Diversity Focuses:</h3>
-                    {% load org_extras %} 
-                    {% for focus in object.diversity_focus.all %}
-                        <small class='mx-1 border p-1 rounded-full bg-gradient-to-br from-slate-50 to-slate-100 shadow'>
-                            <a href="{% url 'diversity_filter' focus.name %}{% if object.location %}{% urlparams location=object.location.pk %}{% endif %}">{{focus.name}}</a></small>
-                    {%endfor%}
-                </div>
+                <h2 class="p-1 mx-3 text-slate-400  hover:shadow-lg text-xs">
+                    <a href="{% url "update_org" object.slug %}">Edit</a>
+                </h2>
                 {% endif %}
-                {% if object.technology_focus.all %}
-                <div class="flex items-baseline mx-3">
-                    <h3 class="font-bold">Technology Focuses:</h3> 
-                    {% for focus in object.technology_focus.all %}
-                    <small class='mx-1'>{{focus.name}}</small>
-                    {%endfor%}
-                </div>
-            {% endif %} 
+                <h2 class="text-red-400 text-xs">Report</h2>
             </div>
+            {% if object.location %}
+            <span class="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" alt="Community Location" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clip-rule="evenodd" />
+            </svg>
+            <a href="{{object.location.get_absolute_url}}">{{object.location}}</a>
+            </span>
+            {% endif %}
+        
+            {% if not object.organizers.all %}
+            <span class="flex items-center text-sm text-yellow-600">
+            <svg xmlns="http://www.w3.org/2000/svg" alt="Unclaimed Org" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            <h2 class="mx-2"> - This org has not been claimed!</h1>
+                <h2 class="underline hover:font-bold hover:italic"><a href="">Request Organizer Access</a></h2>
+            </span>
+            {% endif %}
+            </span>
+            {% if object.online_only %}
+            <span class="flex items-center text-blue-500"><svg xmlns="http://www.w3.org/2000/svg" alt="Meets Online Only" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+            </svg> <h3 class="mx-2 text-sm">- Meets Online Only</h3>
+            </span>
+            {% endif %}
+            {% if not object.code_of_conduct %}
+            <span class="flex items-center text-orange-400"><svg xmlns="http://www.w3.org/2000/svg" alt="No Code of Conduct"
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd" />
+            </svg>
+            <h3 class="mx-2 text-sm">- No Code of Conduct</h3>
+            </span>
+            {% endif %}
         </div>
     </div>
-            {% if object.description %}
-            <div class="">
-                <p class="text-sm">{{object.description}}</p>
-            </div>
+<div class="my-2 flex items-center">
+    
+
+    {# Diversity Focuses #}
+    <div class="flex items-baseline mr-3">
+        {% if object.diversity_focus.all %}
+        <div class="flex items-baseline mr-3">
+            <h3 class="font-bold">Diversity Focuses:</h3>
+            {% load org_extras %} 
+            {% for focus in object.diversity_focus.all %}
+            <small class='mx-1'>
+                <a href="{% url 'diversity_filter' focus.name %}{% if object.location %}{% urlparams location=object.location.pk %}{% endif %}">{{focus.name}}</a></small>
+            {%endfor%}
+        </div>
         {% endif %}
+                    
+        {# Technology Focuses #}
+        {% if object.technology_focus.all %}
+        <div class="flex items-baseline mx-3">
+            <h3 class="font-bold">Technology Focuses:</h3> 
+            {% for focus in object.technology_focus.all %}
+            <small class='mx-1'>{{focus.name}}</small>
+            {%endfor%}
+        </div>
+        {% endif %} 
+        </div>
+            </div>
+        </div>
+    {% if object.description %}
+    <div class="my-4">
+        <h3 class="font-bold underline">Description</h3>
+        <p class="">{{object.description}}</p>
+    </div>
+    {% endif %}
 </div>
 
 

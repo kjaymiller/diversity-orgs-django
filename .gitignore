@@ -169,3 +169,4 @@ diversity_orgs/convert_db_model.py
 locations.json
 .prodenv
 diversity-orgs-django.code-workspace
+style.css
