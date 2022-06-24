@@ -155,3 +155,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AZURE_MAPS_KEY = os.environ.get("AZURE_MAPS_KEY", False)
 AUTH_USER_MODEL = "accounts.CustomUser"
+
+# HTTPS PROXY TO FIX CSRF ISSUES
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
