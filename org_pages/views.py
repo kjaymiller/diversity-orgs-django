@@ -155,7 +155,7 @@ class CreateOrgView(LoginRequiredMixin, CreateView):
         super().post()
         self.object.organizers.add(self.request.user)
         self.object.save()
-        return HttpResponseRedirect(self.get_success_url())
+        return redirect(self.get_success_url())
 
 
 
