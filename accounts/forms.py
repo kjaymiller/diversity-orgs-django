@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserChangeForm, UserCreationForm
 
 from accounts.models import CustomUser
 
@@ -33,3 +33,12 @@ class CustomUserChangeForm(UserChangeForm):
             field.widget.attrs["class"] = "border p-2 my-1 mx-3 w-96 focus:shadow"
         self.fields["username"].help_text = None
         self.fields.pop('password')
+
+
+class LoginForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "border p-1 rounded my-1 m-3 w-96 focus:shadow"
+            field.widget.attrs['placeholder'] = field.label
