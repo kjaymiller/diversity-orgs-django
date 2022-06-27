@@ -7,11 +7,15 @@ from .models import (
     TechnologyFocus,
     DiversityFocus,
     Location,
+    SuggestedEdit,
+    ViolationReport,
 )
 
 registries = (
     TechnologyFocus,
     DiversityFocus,
+    SuggestedEdit,
+    ViolationReport,
 )
 
 

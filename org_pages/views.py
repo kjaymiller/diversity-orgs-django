@@ -1,16 +1,24 @@
 from django.http import Http404
-from django.views.generic import ListView, DetailView, UpdateView, CreateView
+from django.shortcuts import redirect
+from django.views.generic import ListView, DetailView, UpdateView, CreateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from .models import (
     DiversityFocus,
     Organization,
     Location,
     TechnologyFocus,
+    SuggestedEdit,
+    ViolationReport,
 )
-from .forms import OrgForm, CreateOrgForm
+from .forms import (
+    OrgForm,
+    CreateOrgForm,
+    SuggestEditForm,
+    ViolationReportForm,
+)
 
 def is_organizer(user, org):
     """Check if a user is authenticated and an organizer of an organization."""
@@ -37,6 +45,8 @@ class HomePageView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["featured_orgs"] = self.model.objects.filter(is_featured=True)
+        aggs = context['featured_orgs'].exclude(parent=None).values('parent__name', 'parent__slug').distinct().order_by()
+        context['aggs'] = [Organization.objects.get(name=agg['parent__name']) for agg in aggs]
         context["map"] = "is_featured=True"
         context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
         return context
@@ -111,7 +121,6 @@ class OrgDetailView(DetailView):
         if children := self.model.objects.filter(parent=self.object):
             context["children"] = children.order_by("location__country", "location__name")
             context["map"] = f"parent={self.object.pk}"
-            context["map_sprites"] = [(self.object.slug, self.object.logo.url)]
             context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
             
         else:
@@ -151,11 +160,71 @@ class CreateOrgView(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return self.object.get_absolute_url()
 
-    def post(self, request):
+    def post(self):
         super().post()
         self.object.organizers.add(self.request.user)
         self.object.save()
         return redirect(self.get_success_url())
+
+
+class SuggestEditView(UpdateView):
+    """Form that allows users to suggest edits to an organization page."""
+    template_name = "orgs/update.html" # TODO:Create Custom Template
+    form_class = SuggestEditForm
+    model = Organization
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+    
+    def get_initial(self, *args, **kwargs):
+        initial = super().get_initial(*args, **kwargs)
+        initial["diversity_focus"] = (", ").join([x.name for x in self.object.diversity_focus.all()])
+        initial["technology_focus"] = (", ").join([x.name for x in self.object.technology_focus.all()])
+        initial["organizers"] = (", ").join([x.email for x in self.object.organizers.all()])
+        if self.object.location:
+            location_fields = (
+                self.object.location.name,
+                self.object.location.region,
+                self.object.location.country,
+            )
+            initial['location'] = ", ".join([x for x in location_fields if x])
+        if self.object.parent:
+            initial['parent'] = self.object.parent.name
+    
+        return initial
+
+    def form_valid(self, form):
+        user = self.request.user if self.request.user.is_authenticated else None
+        report = dict(self.request.POST)
+        report.pop("csrfmiddlewaretoken", None)
+        report = SuggestedEdit(
+            organization=self.object,
+            report=report,
+            user=user,
+            )
+        
+        report.save()
+        return redirect(self.get_success_url())
+
+class ReportViolationView(CreateView):
+    template_name = "orgs/report.html" # TODO:Create Custom Template
+    form_class = ViolationReportForm
+    model = ViolationReport
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["organization"] = Organization.objects.get(slug=self.kwargs['slug'])
+        return context
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.organization = Organization.objects.get(slug=self.kwargs['slug'])
+        obj.user = self.request.user if self.request.user.is_authenticated else None
+        return super().form_valid(form)
+        
 
 
 
@@ -181,7 +250,6 @@ class UpdateOrgView(LoginRequiredMixin, UpdateView):
             initial['parent'] = self.object.parent.name
     
         return initial
-
         
     def dispatch(self, request, *args, **kwargs):
         """Raise a 404 if user is not an organizer."""
