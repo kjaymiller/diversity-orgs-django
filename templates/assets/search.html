@@ -1,7 +1,8 @@
-<div class="my-4 py-2">
+<div class="my-4 py-2 w-full">
     <form action="/search">
+        <h2 class="font-light">Search for a location, a technology group or a diversity group</h2>
         <div class="flex w-full">
-            <input name="q" type="text" class="sm:w-3/4 lg:w-5/6 border shadow rounded-lg font-thin border-slate-300 p-2 focus:font-bold text-sm md:text-md focus:border-gray-100 italic" id="search" value="{{query}}" placeholder="Search Technologies, Diversity Groups, and Locations">
+            <input name="q" type="text" class="sm:w-3/4 lg:w-full border shadow rounded-lg font-thin border-slate-300 p-2 focus:font-bold text-sm md:text-md focus:border-gray-100 italic" id="search" value="{{query}}" placeholder="Black Python Atlanta">
             <button type="submit" class="bg-purple-200 text-slate-500 hover:text-slate-800 font-light rounded-lg shadow-lg shadow-indigo-100 mx-4 p-2">Submit</button>
         </div>
     </form>
