@@ -1,5 +1,12 @@
 from django import forms
-from .models import Organization, Location, DiversityFocus, TechnologyFocus
+from .models import (
+    Organization,
+    Location,
+    DiversityFocus,
+    TechnologyFocus,
+    SuggestedEdit,
+    ViolationReport,
+    )
 from accounts.models import CustomUser
 
 
@@ -57,7 +64,7 @@ class OrgForm(forms.ModelForm):
 class CreateOrgForm(OrgForm):
     class Meta:
         model = Organization
-        exclude = ('slug', "organizers", "reviewed", "is_featured")
+        exclude = ('slug', "organizers", "reviewed", "is_featured", "active")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -65,3 +72,30 @@ class CreateOrgForm(OrgForm):
         self.fields['code_of_conduct'].widget.attrs['placeholder'] = 'URL to your Code of Conduct'
         for field in self.fields.values():
             field.widget.attrs["class"] = "border my-1 p-1 mx-3 w-96 focus:shadow"
+
+
+class SuggestEditForm(OrgForm):
+    id = forms.IntegerField(widget=forms.HiddenInput())
+
+    class Meta:
+        model = Organization
+        exclude = (
+            'slug', "organizers", "reviewed", "is_featured", 'parent', 'logo', 'active',
+            )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "border my-1 mx-3 w-96 focus:shadow"
+
+
+class ViolationReportForm(forms.ModelForm):
+    
+    class Meta:
+        model = ViolationReport
+        exclude = ('user', 'organization')
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs["class"] = "border my-1 mx-3 w-96 focus:shadow"

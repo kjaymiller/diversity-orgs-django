@@ -203,3 +203,43 @@ class Organization(models.Model):
             if not obj.logo:
                 obj.logo = self.logo
             obj.save()
+
+
+class SuggestedEdit(models.Model):
+    organization = models.ForeignKey(
+        Organization, on_delete=models.SET_NULL,
+        help_text="Organization the edit should go to.",
+        null=True,
+    )
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.SET_NULL,
+        help_text="User who suggested the edit.",
+        null=True,
+    )
+    report = models.JSONField()
+
+    def get_absolute_url(self):
+        return reverse("org_detail", kwargs={"slug": self.organization.slug})
+    
+    def __str__(self):
+        user = self.user or "Anonymous"
+        return f"{self.organization.name} - {user}"
+
+
+class ViolationReport(models.Model):
+    organization = models.ForeignKey(
+        Organization, on_delete=models.SET_NULL,
+        help_text="Organization accused of violation.",
+        null=True,
+    )
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.SET_NULL,
+        help_text="User who reported the violation.",
+        null=True,
+    )
+    report = models.TextField(
+        help_text="Report of the violation.",
+    )
+
+    def get_absolute_url(self):
+        return reverse("org_detail", kwargs={"slug": self.organization.slug})
