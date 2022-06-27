@@ -19,7 +19,7 @@
                     <a href="{% url "update_org" object.slug %}">Edit</a>
                 </h2>
                 {% endif %}
-                <h2 class="text-red-400 text-xs"><a href="{% url 'violation_report' object.slug %}">Report</h2>
+                <h2 class="text-red-400 text-xs"><a href="{% url 'violation_report' object.slug %}">Report</a></h2>
             </div>
             {% if object.location %}
             <span class="flex items-center">
