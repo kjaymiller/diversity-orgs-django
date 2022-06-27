@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="my-3 uppercase text-red-600 font-bold text-lg">Report Code of Conduct {{organization}}!</h2>
+
+<p class="">We take <strong>EVERY</strong> report seriously. Please state the reason for this report in the field below.</p>
+
+<div class="my-2 rounded p-2 border bg-red-200 text-red-800">
+    <h3 class="font-bold">Actions of this report.</h3>
+    <ul>
+{% if organization.organizers %}
+    <li class="my-3">The Organization's admins will be notified of the report.</li>
+    <li class="my-3"> The Organization page will not be discoverable on the site<sup>*</sup>.</li>
+    <li class="my-3"> A banner will be added to the site showing that a violation has been reported and is under review.</li>
+    <li class="uppercase font-bold">No personal information will be shared with the organizers.</li>
+    
+    {% else %}
+    <li class="">One of the site moderators will review the report.</p>
+    <li class="my-2"> The Organization page will not be discoverable on the site<sup>*</sup>.</li>
+    <li class=""> A banner will be added to the site showing that a violation has been reported and is under review.</li>
+    {% endif %}
+</div>
+
+<div class="m-3">
+    <form>
+        {% csrf_token %}
+        {{form.as_p}}
+        <div>
+            <input type="submit" value="Submit Report" class="bg-red-600 hover:bg-red-800 p-2 rounded border text-white text-right text-sm">
+            <a href="{% url 'org_detail' organization.slug %}" class="text-slate-400 hover:underline hover:text-slate-600">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div class="p-2 rounded border">
+    <small><sup>*</sup>The page can still be accessed directly or via an external search engine.</small>
+</div>
+{% endblock %}

@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block head_content %}
-<h1 class="text-3xl font-bold my-4">Happy Juneteenth!!</h1>
 {% endblock %}
 {% block content %}
+{% if featured_orgs %}
     <div class=my-4>
         <h2 class="h-4 text-2xl font-extrabold my-4">Check out some featured orgs</h2>
         <div class="grid grid-cols-4">
-            {% for org in featured_orgs %}
-            <div class="h-64 w-642 m-auto m-3 text-2xl flex items-center">
+            {% for org in aggs %}
+            <div class="h-64 w-642 m-auto m-3 text-2xl flex justify-around items-center">
                 {% if org.logo %}
                 <a href="{{org.get_absolute_url }}"> 
                     <img src="{{org.logo.url}}" alt="{{org.name}}" class="items-center mx-auto max-h-36 p-1 rounded" />            
@@ -15,7 +15,7 @@
                 
                 {% else %}
 
-                <a href="{{org.get_absolute_url}}"> 
+                <a href="{% url 'org_detail' org.slug %}"> 
                     <h2 class="font-bold invisible lg:visible">{{org.name}}</h2>
                 </a>
                 {% endif %}
@@ -23,11 +23,28 @@
             {% endfor %}
         </div>
     </div>
-    
+{% endif %}
     <div class="my-4">
-        <h1 class="text-3xl">What is DiversityOrgs.Tech</h1>
-        <p>This site helps you to find and connect with organizations working to empower, and underrepresented people in tech.</p>
-        <p>Connect with organizations of folks who share a lived and present experience that you may be facing in many different stages in your journey.</p>
-
+        <div class="my-10">
+        <h2 class="text-4xl font-bold">Search Around the World (and Online)</h2>
+        <div class="my-5 lg:w-1/2 text-lg">
+            <p>Find and connect with organizations working to empower, and underrepresented people in tech.</p>
+            <p>Search Hundred of Organizations and the sub organization to find the groups in your area!</p>
+        </div>
     </div>
+    <div class="my-10">
+        <h2 class="text-4xl font-bold">A growing selection of Diversity and Technology Focuses</h2>
+        <p class="my-5">Connect with organizations of folks who share a lived and present experience that you may be facing in many different stages in your journey.</p>
+        <p></p>
+    </div>
+    <div class="my-10">
+        <h2 class="text-4xl font-bold">All for the Orgs and their Members!</h2>
+        <div class="p-1">
+            <p class="my-4">The goal of this site is two-fold. The first is to finding organizations more successfuly by creating a dedication resource for all potential members.</p>
+            <p class="my-4">The other is to make it easier to find and share organizations for underrepresented folks.</p>
+            <p class="my-4">For this reason we freely offer this site to organizations and the present and future members.</p>
+            <p class="my-4">We also provide an API to make sharing resources even easier.</p>
+        </div>
+    </div>
+
 {% endblock%}

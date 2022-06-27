@@ -8,8 +8,8 @@
     {% block title %}{% endblock %} DiversityOrgs.tech</title>
     {% load static %}
     
-    {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
-    <link href="{% static 'web/css/style.css' %}" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% comment %} <link href="{% static 'web/css/style.css' %}" rel="stylesheet"> {% endcomment %}
     {% if map %}
         {% include 'assets/map_head_embed.html' %}
     {% endif %}

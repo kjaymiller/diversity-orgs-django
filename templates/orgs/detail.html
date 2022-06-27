@@ -2,12 +2,12 @@
 
 {% block content %}
     
-    <div class="border rounded p-2">
-        <div class="flex">
+<div class="border rounded p-2">
+    <div class="flex">
         {% if object.logo %}
             <img src="{{object.logo.url}}" alt="Logo for {{object.name}}" class="max-h-24 p-4 mr-4 rounded" />
         {% endif %}
-        
+    
         <div>
             <div class="flex items-baseline">
                 <h1 class="text-2xl my-2 font-bold flex items-center">{{object.name}} {%if object.url %}<a class="mx-1" href="{{object.url}}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -19,7 +19,7 @@
                     <a href="{% url "update_org" object.slug %}">Edit</a>
                 </h2>
                 {% endif %}
-                <h2 class="text-red-400 text-xs">Report</h2>
+                <h2 class="text-red-400 text-xs"><a href="{% url 'violation_report' object.slug %}">Report</h2>
             </div>
             {% if object.location %}
             <span class="flex items-center">
@@ -56,40 +56,48 @@
             {% endif %}
         </div>
     </div>
-<div class="my-2 flex items-center">
-    
+    <div class="my-2 flex items-center">
+        
 
-    {# Diversity Focuses #}
-    <div class="flex items-baseline mr-3">
-        {% if object.diversity_focus.all %}
+        {# Diversity Focuses #}
         <div class="flex items-baseline mr-3">
-            <h3 class="font-bold">Diversity Focuses:</h3>
-            {% load org_extras %} 
-            {% for focus in object.diversity_focus.all %}
-            <small class='mx-1'>
-                <a href="{% url 'diversity_filter' focus.name %}{% if object.location %}{% urlparams location=object.location.pk %}{% endif %}">{{focus.name}}</a></small>
-            {%endfor%}
-        </div>
-        {% endif %}
-                    
-        {# Technology Focuses #}
-        {% if object.technology_focus.all %}
-        <div class="flex items-baseline mx-3">
-            <h3 class="font-bold">Technology Focuses:</h3> 
-            {% for focus in object.technology_focus.all %}
-            <small class='mx-1'>{{focus.name}}</small>
-            {%endfor%}
-        </div>
-        {% endif %} 
-        </div>
+            {% if object.diversity_focus.all %}
+            <div class="flex items-baseline mr-3">
+                <h3 class="font-bold">Diversity Focuses:</h3>
+                {% load org_extras %} 
+                {% for focus in object.diversity_focus.all %}
+                <small class='mx-1'>
+                    <a href="{% url 'diversity_filter' focus.name %}{% if object.location %}{% urlparams location=object.location.pk %}{% endif %}">{{focus.name}}</a></small>
+                {%endfor%}
             </div>
+            {% endif %}
+                        
+            {# Technology Focuses #}
+            {% if object.technology_focus.all %}
+            <div class="flex items-baseline mx-3">
+                <h3 class="font-bold">Technology Focuses:</h3> 
+                {% for focus in object.technology_focus.all %}
+                <small class='mx-1'>{{focus.name}}</small>
+                {%endfor%}
+            </div>
+            {% endif %} 
         </div>
+    </div>
+
     {% if object.description %}
     <div class="my-4">
         <h3 class="font-bold underline">Description</h3>
         <p class="">{{object.description}}</p>
     </div>
     {% endif %}
+
+<div class="flex w-full justify-end p-2 m-2">
+    {% if user.is_organizer  or user.is_superuser %}
+        <a href="{% url 'update_org' object.slug %}" class="text-sm text-slate-200">Edit</a>
+    {% else %}
+        <a href="{% url 'suggest_edit' object.slug %}" class="text-sm text-slate-200">Suggest Edit</a>
+    {% endif %}
+</div>
 </div>
 
 
