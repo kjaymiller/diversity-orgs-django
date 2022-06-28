@@ -164,3 +164,7 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 
 # HTTPS PROXY TO FIX CSRF ISSUES
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# django_project/settings.py
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"  # new

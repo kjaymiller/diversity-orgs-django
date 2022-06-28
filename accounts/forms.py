@@ -5,8 +5,10 @@ from accounts.models import CustomUser
 
 
 class CustomUserCreationForm(UserCreationForm):
+    field_order = ["username", "password1", "password2", "email", "twitter", "github", "linkedin", "agrees_to_coc"]
+
     class Meta(UserCreationForm.Meta):
-        fields = ("username", "email")
+        fields = ('username', 'email', 'twitter', 'github', 'linkedin', 'agrees_to_coc')
         model = CustomUser
 
     def __init__(self, *args, **kwargs):

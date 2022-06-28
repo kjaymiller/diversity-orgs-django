@@ -1,6 +1,6 @@
 from django.http import Http404
 from django.shortcuts import redirect
-from django.views.generic import ListView, DetailView, UpdateView, CreateView, FormView
+from django.views.generic import ListView, DetailView, UpdateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.db.models import Q, Count
@@ -206,6 +206,7 @@ class SuggestEditView(UpdateView):
         report.save()
         return redirect(self.get_success_url())
 
+
 class ReportViolationView(CreateView):
     template_name = "orgs/report.html" # TODO:Create Custom Template
     form_class = ViolationReportForm
@@ -225,8 +226,6 @@ class ReportViolationView(CreateView):
         obj.user = self.request.user if self.request.user.is_authenticated else None
         return super().form_valid(form)
         
-
-
 
 class UpdateOrgView(LoginRequiredMixin, UpdateView):
     """update form if organization is in organization"""
@@ -258,11 +257,19 @@ class UpdateOrgView(LoginRequiredMixin, UpdateView):
         raise Http404("You must be an organization member to update an organization.")
         
 
-class ClaimOrgView(LoginRequiredMixin, UpdateView):
+class ClaimOrgView(LoginRequiredMixin, DetailView):
     """Claim an organization if there are no organizers. This request must be reviewed."""
-    template_name = "orgs/update.html"
+    template_name = "orgs/claim.html"
     model = Organization
-    form_class = OrgForm
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if form.is_valid and request.user.is_authenticated:    
+            self.object.organizers.add(request.user)
+            self.object.save()
+
+        return redirect(self.object.get_absolute_url())
 
 class LocationFilterView(ListView):
     template_name = "location_filter.html"

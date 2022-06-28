@@ -1,0 +1,14 @@
+<div class="border-t font-thin bottom-0 container mx-auto my-4 p-5 flex justify-center items-center  text-xs text-slate-600 hover:text-slate-800">
+    {% load static %}
+    <div>
+        <p class="mx-2">&copy; 2022</p>
+    </div>
+    <a class="mx-2" href="https://github.com/kjaymiller/diversity-orgs-django"><img class="h-4 w-4" src="{% static 'web/img/GitHub-Mark-32px.png' %}" alt="GitHub"></a>
+    <a href="{% url "create_org" %}" class="mx-2">Add an Org</a>
+    {% if user.is_authenticated %}
+    <a href="/accounts/logout" class="mx-2">Logout</a>
+    {% else %}
+    <a href="{% url "account-signup" %}" class="mx-2">Create Account</a>
+    <a href="{% url "login" %}" class="mx-2">Login</a>
+    {% endif %}
+</div>

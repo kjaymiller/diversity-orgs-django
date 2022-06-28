@@ -17,25 +17,26 @@
     {% block head %}{% endblock %}
 </head>
 <body {% if map %}onload="GetMap()"{% endif %}>
-    <div class="lg:mx-auto mx-4 lg:container">
-        <div class="mt-5 mb-2 p-2 flex flex-wrap">
-            <h1 class="text-2xl lg:text-5xl font-bold mx-1"><a href="/">DiversityOrgs.Tech</a>
-            <small class="text-sm xl:text-sm font-light">Beta</small></a></h1>
-        </div>
+        <div class="lg:mx-auto mx-4 lg:container min-h-screen">
+            <div class="mt-5 mb-2 p-2 flex flex-wrap">
+                <h1 class="text-2xl lg:text-5xl font-bold mx-1"><a href="/">DiversityOrgs.Tech</a>
+                <small class="text-sm xl:text-sm font-light">Beta</small></a></h1>
+            </div>
 
-        {% include 'assets/search.html' %}
-        
-        {% block head_content %}
-        {% endblock %}    
-        {% block map %}
-        {% if map %}
-        <div id="map" class="mx-auto h-96 w-full xl:w-2/3"></div>
-        {% endif %}
-        {% endblock %}    
-        
-        {% block content %}
-        {% endblock %}    
+            {% include 'assets/search.html' %}
+            
+            {% block head_content %}
+            {% endblock %}    
+            {% block map %}
+            {% if map %}
+            <div id="map" class="mx-auto h-96 w-full xl:w-2/3"></div>
+            {% endif %}
+            {% endblock %}    
+            
+            {% block content %}
+            {% endblock %}    
+        </div>
     </div>
-    {% include 'footer.html' %}
+    {% include 'assets/footer.html' %}
 </body>
 </html>

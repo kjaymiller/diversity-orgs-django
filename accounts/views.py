@@ -2,17 +2,28 @@ from django.urls import reverse_lazy
 from rest_framework.authtoken.models import Token
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
 from django.shortcuts import render, redirect
 import django.contrib.messages
 
 
-class SignUpView(CreateView):
+class SignUpView(UserPassesTestMixin, CreateView):
+    """Create a new user."""
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy("register")
+    success_url = reverse_lazy("account-update")
     template_name = "registration/signup.html"
+
+    def test_func(self):
+        """User Must Be Logged Out"""
+        return not self.request.user.is_authenticated
+
+    def handle_no_permission(self):
+        """Redirect to login if user is already logged in."""
+        django.contrib.messages.warning(request, 'You are already signed into an account. We have logged you out.')
+        return redirect('logout')
+
 
 class UpdateUserView(LoginRequiredMixin, UpdateView):
     model = CustomUser
@@ -33,6 +44,7 @@ class UpdateUserView(LoginRequiredMixin, UpdateView):
 
 class CreateAPIKey(LoginRequiredMixin, TemplateView):
     login_url = 'login'
+    success_url = reverse_lazy('account-update')
 
     def get(self, request):
         """Load the Create API Key page"""

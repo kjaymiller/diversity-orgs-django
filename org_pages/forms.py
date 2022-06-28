@@ -60,7 +60,6 @@ class OrgForm(forms.ModelForm):
                 location = Location.objects.get_or_create(base_query__icontains=form_location)[0]
                 self.cleaned_data['location'] = location
 
-
 class CreateOrgForm(OrgForm):
     class Meta:
         model = Organization

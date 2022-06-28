@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <h1 class="text-xl font-bold uppercase">Claim {{object.name}} as an Organizer</h1>
+    <p class="my-4">Organizers have the ability to edit their organization and any org belonging to it.<p>
+    <p class="my-4"> We'll use the information in your account to verify that you are an organizer.</p>
+    <p class="my-4">If your email is not from the same domain, we will review:</p>
+    <ul class="my-4 p-5 list-disc">
+        <li>The Organization Website</li>
+        <li>Social Media (That you've shared in <a href="">your profile</a>)</li>
+        <li>We may email the organization administrators</li>
+</div>
+<form method="post">
+    <button type="submit">Submit</button>
+</form>
+{% endblock %}
