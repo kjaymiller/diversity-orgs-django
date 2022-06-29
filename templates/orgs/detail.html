@@ -46,7 +46,13 @@
             </svg> <h3 class="mx-2 text-sm">- Meets Online Only</h3>
             </span>
             {% endif %}
-            {% if not object.code_of_conduct %}
+            {% if object.code_of_conduct %}
+            <span class="flex items-center text-blue-500"><a class="hover:underline" href="{{object.code_of_conduct}}"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+              </svg></a>
+                <h3 class="mx-2 text-sm"><a class="hover:underline" href="{{object.code_of_conduct}}">- Code of Conduct</a></h3>
+                </span>
+            {% else %}
             <span class="flex items-center text-orange-400"><svg xmlns="http://www.w3.org/2000/svg" alt="No Code of Conduct"
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd" />
@@ -93,9 +99,9 @@
 
 <div class="flex w-full justify-end p-2 m-2">
     {% if user.is_organizer  or user.is_superuser %}
-        <a href="{% url 'update_org' object.slug %}" class="text-sm text-slate-200">Edit</a>
+        <a href="{% url 'update_org' object.slug %}" class="text-xs text-slate-500">Edit</a>
     {% else %}
-        <a href="{% url 'suggest_edit' object.slug %}" class="text-sm text-slate-200">Suggest Edit</a>
+        <a href="{% url 'suggest_edit' object.slug %}" class="text-xs text-slate-500">Suggest Edit</a>
     {% endif %}
 </div>
 </div>

@@ -272,7 +272,7 @@ class ClaimOrgView(LoginRequiredMixin, DetailView):
         return redirect(self.object.get_absolute_url())
 
 class LocationFilterView(ListView):
-    template_name = "location_filter.html"
+    template_name = "orgs/list.html"
     model = Organization
 
     def get_queryset(self):
@@ -284,54 +284,86 @@ class LocationFilterView(ListView):
         return context
 
 
+class DiversityFocusView(ListView):
+    template_name = "tags/list.html"
+    model = DiversityFocus
+    paginate_by=50
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['focus'] = 'diversity'
+        context['focus_filter'] = 'diversity_filter'
+        return context
+
+
 class DiversityFocusFilterView(ListView):
-    template_name = "location_filter.html"
+    template_name = "orgs/list.html"
     model = Organization
-    paginate_by=20
+    paginate_by=50
 
     def get_queryset(self):
         diversity=DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
         queryset = Organization.objects.filter(diversity_focus=diversity)
         if location:=self.request.GET.get('location', None):
-            return queryset.filter(location__pk=location) # Disconnect and filter by location
-
-        # The other checks are additive
-        if city:=self.request.GET.get('city', None):
-            queryset = queryset.filter(location__name=city)
-        if region:=self.request.GET.get('region', None):
-            queryset = queryset.filter(location__region=region)
-        if country:=self.request.GET.get('country', None):
-            queryset = queryset.filter(location__country=country)
-        
+            return queryset.filter(location=location) # Disconnect and filter by location
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["diversity"] = diversity=DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
+        context["tag"] = DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
+        context['focus'] = 'diversity'
+        context["map"] = f"{context['focus']}_focus={context['tag'].id}"
+        context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
+
         if location:=self.request.GET.get('location', None):
             context["location"] = Location.objects.get(pk=location)
+            context["map"] += f"&location={location}"
         
         return context
 
-
-class TechnologyFocusFilterView(ListView):
-    template_name = "location_filter.html"
-    model = Organization
-
-    def get_queryset(self):
-        return Organization.objects.filter(location__pk=self.kwargs["region_pk"]).filter(
-            diversity_focus=self.kwargs["technology"]
-        )
+class TechnologyFocusView(ListView):
+    template_name = "tags/list.html"
+    model = TechnologyFocus
+    paginate_by=25
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["technology"] = TechnologyFocus.objects.get(pk=self.kwargs["technology"])
-        context["location"] = Location.objects.get(pk=self.kwargs["region_pk"])
+        context["focus"] = "technology"
+        context['focus_filter'] = 'technology_filter'
+        return context
+    
+
+class TechnologyFocusFilterView(ListView):
+    template_name = "orgs/list.html"
+    model = Organization
+    paginate_by: int = 25
+
+    def get_queryset(self):
+        """Filter by technology focus and location if provided."""
+        orgs = Organization.objects.filter(technology_focus__name__iexact=self.kwargs["technology"])
+        
+        if location:=self.request.GET.get('location', None):
+            return orgs.filter(location__pk=location)
+        
+        return orgs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["focus"] = "technology"
+        context["tag"] = TechnologyFocus.objects.get(name__iexact=self.kwargs["technology"])
+        context["map"] = f"{context['focus']}_focus={context['tag'].id}"
+        context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
+
+
+        if location:=self.kwargs.get('location', None):
+            context["location"] = Location.objects.get(pk=location)
+            context["map"] += f"&location={location}"
+            
         return context
 
 
 class OnlineDiversityFocusFilterView(ListView):
-    template_name = "location_filter.html"
+    template_name = "orgs/list.html"
     model = Organization
 
     def get_queryset(self):
@@ -339,22 +371,18 @@ class OnlineDiversityFocusFilterView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["diversity"] = DiversityFocus.objects.get(pk=self.kwargs["diversity"])
         context["location"] = "Online"
         return context
 
 
 class OnlineTechnologyFocusFilterView(ListView):
-    template_name = "location_filter.html"
+    template_name = "orgs/list.html"
     model = Organization
 
     def get_queryset(self):
-        return Organization.objects.filter(location__pk=self.kwargs["region_pk"]).filter(
-            diversity_focus=self.kwargs["technology"]
-        )
+        return Organization.objects.filter(diversity_focus=self.kwargs["technology"])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["technology"] = DiversityFocus.objects.get(pk=self.kwargs["technology"])
         context["location"] = "Online"
         return context

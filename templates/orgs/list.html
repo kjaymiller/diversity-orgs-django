@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="">
+    <h1>Showing Orgs {% if focus %} labeled <strong>{{tag}}</strong>{% endif %}
+     {% if location %} in {{location}}{% endif %}</h1>
+<h2 class="text-sm"> Showing {{page_obj.start_index}} - {{page_obj.end_index}} of {{page_obj.paginator.count}} results</h2>
+    {% if focus and location %}
+    <h2 class="text-sm">See All Organizations Tagged: <a href="/filter/{{focus}}/{{tag}}"> class="font-bold hover:underline">{{tag}}</a></h2>
+    {% endif %}
+    {% if location %}
+    <h2 class="text-sm">See All Organizations in <a class="hover:underline font-bold" href="{% url 'location_filter' location.pk %}">{{location}}</a></h2>  
+    {% endif %}
+</div>
+
+<div>
+    {% for org in page_obj %}
+        {% include 'assets/list_index_record.html' %}
+    {% endfor %}
+</div>
+
+{% include 'assets/pagination.html' %}
+{% endblock %}

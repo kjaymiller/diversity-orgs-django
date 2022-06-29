@@ -16,7 +16,7 @@ urlpatterns = [
         name="diversity_filter",
     ),
     path(
-        "filter/location/<int:region_pk>/technology/<str:technology>",
+        "filter/technology/<str:technology>",
         views.TechnologyFocusFilterView.as_view(),
         name="technology_filter",
     ),
@@ -31,4 +31,6 @@ urlpatterns = [
         name="online_technology_filter",
     ),
     path('orgs/<slug:slug>/violationreport', views.ReportViolationView.as_view(), name="violation_report"),
+    path('tags/technology', views.TechnologyFocusView.as_view(), name="technology"),
+    path('tags/diversity', views.DiversityFocusView.as_view(), name="diversity"),
 ]

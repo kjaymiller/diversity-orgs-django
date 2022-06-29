@@ -1,14 +1,22 @@
 <div class="border-t font-thin bottom-0 container mx-auto my-4 p-5 flex justify-center items-center  text-xs text-slate-600 hover:text-slate-800">
-    {% load static %}
     <div>
-        <p class="mx-2">&copy; 2022</p>
+        <p class="mx-2 font-bold">&copy; 2022</p>
     </div>
+    <div class="mx-2">
+        <h2 class="underline">See All</h2>
+        <h2 class="hover:underline"><a href="{% url 'technology' %}">Technology Focuses</a></h2>
+        <h2 class="hover:underline"><a href="{% url 'diversity' %}">Diversity Focuses</a></h2>
+    </div>
+    {% load static %}
     <a class="mx-2" href="https://github.com/kjaymiller/diversity-orgs-django"><img class="h-4 w-4" src="{% static 'web/img/GitHub-Mark-32px.png' %}" alt="GitHub"></a>
     <a href="{% url "create_org" %}" class="mx-2">Add an Org</a>
-    {% if user.is_authenticated %}
-    <a href="/accounts/logout" class="mx-2">Logout</a>
-    {% else %}
-    <a href="{% url "account-signup" %}" class="mx-2">Create Account</a>
-    <a href="{% url "login" %}" class="mx-2">Login</a>
-    {% endif %}
+    <div class="mx-2">
+        <h2 class="underline">Users</h2>
+        {% if user.is_authenticated %}
+        <a href="/accounts/logout" class="mx-2">Logout</a>
+        {% else %}
+        <h3><a href="{% url "account-signup" %}" class="hover:underline">Create Account</a></h3>
+        <h3><a href="{% url "login" %}" class="hover:underline">Login</a></h3>
+        {% endif %}
+    </div>
 </div>

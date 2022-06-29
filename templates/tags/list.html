@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-xl font-bold">
+    {{ focus }} Focuses
+</h1>
+{% for tag in object_list %}
+<div class="border-b-2 m-2">
+    <a href="{% url focus_filter tag %}">{{tag}}</a>
+    <span>
+        {% for parent in tag.parents.all %}
+            <a href="{% url focus_filter parent.name %}" class="text-xs hover:bg-slate-100 p-1 rounded">{{parent | capfirst}}</a>
+        {% endfor%}
+    </span>
+</div>
+
+{% endfor %}
+{% include 'assets/pagination.html' %}
+{% endblock %}

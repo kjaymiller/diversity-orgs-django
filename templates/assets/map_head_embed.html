@@ -34,9 +34,6 @@
         );
 
         map.sources.add(datasource);
-        {% for sprite in map_sprites %}
-          map.imageSprite.add('{{sprite.0 | escapejs}}', '{{sprite.1 | escapejs}}').then(function(){})
-        {% endfor %}
 
         // The Bubble Layer is used to display the bubbles of Clusters
         var clusterBubbleLayer = new atlas.layer.BubbleLayer(datasource, null, {
@@ -78,7 +75,7 @@
         map.controls.add(new atlas.control.ZoomControl(), {
             position: 'bottom-right'
         });
-        datasource.importDataFromUrl("/api/map?format=json&{{map | escapejs}}")
+        datasource.importDataFromUrl("/api/map?format=json&{{map}}")
         function singleLinkClick(e) {            
             window.location.href = e.shapes[0].getProperties().url
         }
