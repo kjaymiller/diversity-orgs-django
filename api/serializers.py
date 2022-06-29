@@ -26,7 +26,7 @@ class OrganizationMappingSerializer(serializers.ModelSerializer):
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organization
-        exclude = ("logo",)
+        exclude = ("logo", "organizers")
         extra_kwargs = {"name": {"required": False}}
         depth = 1
 

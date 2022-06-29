@@ -81,6 +81,29 @@ class Location(models.Model):
 
 
 class Organization(models.Model):
+    USER_GROUP = 'USER_GROUP'
+    EAP = "EMPLOYMENT ASSISTANCE PROGRAM"
+    NETWORK = 'NETWORKING'
+    MENTORSHIP = 'MENTORSHIP'
+    CONFERENCE = 'CONFERENCE'
+    YOUTH = 'YOUTH ORGANIZATION'
+    CODE_SCHOOL = "CODE SCHOOL"
+    OTHER = 'OTHER'
+
+    TYPE_CHOICES = [
+        (USER_GROUP, "User Group"),
+        (EAP, "Employment Assistance Program"),
+        (NETWORK, "Network"),
+        (MENTORSHIP, "Mentorship"),
+        (CONFERENCE, "Conference"),
+        (YOUTH, "Youth Organization"),
+        (CODE_SCHOOL, "Code School"),
+        (OTHER, "Other"),
+    ]
+    org_type = models.CharField(
+        choices=TYPE_CHOICES, default=USER_GROUP, max_length=50,
+        blank=True, null=True,
+    )
     slug = models.SlugField(
         max_length=200, unique=True, null=True,
         help_text="Slug will be generated automatically from the name of the organization.",
@@ -157,6 +180,7 @@ class Organization(models.Model):
         upload_to=gen_upload_path(), blank=True,
         help_text="Logo of the organization. Will be displayed on the organization's page.",
     )
+
 
     class Meta:
         ordering = ("name",)
