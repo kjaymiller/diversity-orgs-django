@@ -5,7 +5,7 @@ from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, UpdateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.db.models import Q, Count
+from django.db.models import Q, QuerySet
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
 from .models import (
     DiversityFocus,
@@ -62,17 +62,21 @@ class HomePageView(ListView):
     template_name = "home.html"
     model = Organization
 
+
+    def get_queryset(self) -> QuerySet[Organization]:
+        """Return the organizations where the is_featured flag is True."""
+        return self.model.objects.filter(is_featured=True) \
+            .exclude(parent=None).values('parent__name', 'parent__slug') \
+            .distinct().order_by()
+
     def get_context_data(self, **kwargs) -> _context:
         """
-        Add featured_orgs, their parents, and the map trigger for `is_featured` flag
-
-        context values added:
-            featured_orgs (list): A list of featured organizations #TODO: #28 make this the queryset using `def get_queryset()`
+        Add aggregations from the object_list and the map API call trigger for `is_featured=True`
         """        
+
         context = super().get_context_data(**kwargs)
-        context["featured_orgs"] = self.model.objects.filter(is_featured=True)
-        aggs = context['featured_orgs'].exclude(parent=None).values('parent__name', 'parent__slug').distinct().order_by()
-        context['aggs'] = [Organization.objects.get(name=agg['parent__name']) for agg in aggs]
+
+        context['aggs'] = [self.model.objects.get(name=obj['parent__name']) for obj in self.object_list]
         context["map"] = "is_featured=True"
         context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
         return context
