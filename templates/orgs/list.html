@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="">
-    <h1>Showing Orgs {% if tag %} with {{tag.name}}<strong>{{tag.value}}</strong>{% endif %}
+    <h1>Showing {% if online_only %} <strong>Online</strong> {% endif %} Orgs {% if tag %} with <strong>{{tag | capfirst}} Field: {% for tv in tag_value %} {{tv}} {% endfor %}</strong>{% endif %}
      {% if location %} in {{location}}{% endif %}</h1>
 <h2 class="text-sm"> Showing {{page_obj.start_index}} - {{page_obj.end_index}} of {{page_obj.paginator.count}} results</h2>
     {% if focus and location %}

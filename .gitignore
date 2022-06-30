@@ -170,3 +170,4 @@ locations.json
 .prodenv
 diversity-orgs-django.code-workspace
 style.css
+tools/update_children.py

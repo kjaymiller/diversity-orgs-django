@@ -1,3 +1,4 @@
+from ast import Or
 from typing import Any, TypeVar
 from django.db.models import Model, QuerySet
 from django.http import Http404, HttpResponse
@@ -47,6 +48,62 @@ def is_organizer(user: object, org:object) -> bool:
     
     return False
 
+
+def get_tag_q(tag: str, value) -> Q:
+    """Get a Q object for a tag."""
+    return Q(**{f'{tag}__name__icontains': value}) | Q(**{f'{tag}__parents__name__in': value})
+
+
+def get_location_q(params: dict[str, Any]) -> dict[Any]:
+    """Get a Q object for a location."""
+    if "city" in params:
+        params["name"] = params.pop('city')
+    return {f'location__{key}__icontains': value for key, value in params.items() if value != None}
+    
+
+def get_bool_q(params: dict[str, Any]) -> dict[bool]:
+    """Get a Q object for a boolean field."""
+    return {f'{key}': value for key, value in params.items() if value != None}
+
+def get_by_params(
+    params: dict[str, Any], model: Organization=Organization,
+    ) -> QuerySet:
+    """Get a queryset based on a set of parameters."""
+    
+    queries = Q()
+    # tag filters check the tag name and the tag's parents
+    tag_filters = {
+        'technology': params.get('technology', None),
+        'diversity': params.get('diversity', None),
+    }
+
+    for tag, value in tag_filters.items():
+        if value != None:
+           queries |= get_tag_q(tag, value)
+
+    # location filters check the location name, region, and the country
+    location_params = {
+        "city": params.get('city', None),
+        "region": params.get('region', None),
+        "country": params.get('country', None),
+    }
+
+    # Boolean filters check the boolean fields
+    bool_params = {
+        "active": params.get('active', None),
+        "online_only": params.get('online_only', None),
+        "paid": params.get('paid', None),
+    }
+
+
+    # Combine all the filters
+    return model.objects.filter(
+            queries,
+            **get_location_q(location_params),
+            **get_bool_q(bool_params),
+        )
+    return model.objects.filter(queries)
+
 _context = TypeVar('_context', bound=dict)
 
 # Create your views here.
@@ -61,7 +118,6 @@ class HomePageView(ListView):
     
     template_name = "home.html"
     model = Organization
-
 
     def get_queryset(self) -> QuerySet[Organization]:
         """Return the organizations where the is_featured flag is True."""
@@ -98,12 +154,6 @@ class SearchResultsView(ListView):
         Test search based on existed entrys in the database.
         Checks Organization, Location, DiversityFocus and TechnologyFocus objects.
         Returns a full text search on those models if nothing is a match.
-
-        Args:
-            self (undefined):
-
-        Returns:
-            SearchQuery: The query object
         """
         
         query = self.request.GET.get("q")
@@ -619,7 +669,6 @@ class TechnologyFocusFilterView(ListView):
         return context
 
 
-
 class OnlineTagFilterView(ListView):
     TAG_OPTIONS = {
         "diversity": DiversityFocus,
@@ -627,56 +676,64 @@ class OnlineTagFilterView(ListView):
     }
     template_name = "orgs/list.html"
     model = Organization    
+    paginate_by: int = 25
 
     def get_focus(self):
         """Gets the tag and tag_value from the url"""
         if (tag:=self.kwargs['tag'].lower()) in self.TAG_OPTIONS:
             return {
-                'name': tag,
-                'value': self.TAG_OPTIONS[tag].objects.get(pk=self.kwargs["tag_value"])
-                }
+                "tag": tag,
+                "tag_value": self.TAG_OPTIONS[tag].objects.filter(name__iexact=self.kwargs["tag_value"])
+            }
         
         else:
             raise Http404("Tag not found.")
 
-class OnlineDiversityFocusFilterView(ListView):
-    """
-    A filterview ListViews but for when the organization is online_only
-    
-    NOTE: This could inherit from the list view.
-
-    """
-    template_name = "orgs/list.html"
-    model = Organization
-
-    def get_queryset(self) -> dict[str, Any]:
-        """Filter the organizations by the online_only and optionally the location."""
-        return Organization.objects.filter(online_only=True).filter(diversity_focus=self.kwargs["diversity"])
+    def get_queryset(self) -> QuerySet:
+        """Filter by the tag and tag_value"""
+        focus = self.get_focus()
+        return Organization.objects.filter(online_only=True, **{f'{focus["tag"]}__in': focus["tag_value"]})
 
     def get_context_data(self, **kwargs) -> _context:
-        """Set the location to `Online`"""
-        context = super().get_context_data(**kwargs)
-        context["tag"] = self.get_focus()
-        return context
+        """add tag to context"""
+        return {
+            "online_only": True,
+            **super().get_context_data(**kwargs),
+            **self.get_focus(),
+            }
 
-    def get_queryset(self):
-        """Sets the queryset to diversity focus tags that are online."""
-        tag = self.get_focus()
-        return Organization.objects.filter(
-                online_only=True,
-                **{tag['name']: tag['value']}
-        )
 
-class OnlineTechnologyFocusFilterView(ListView):
-    """
-    Like the OnlineDiversityFocusFilterView, but for the TechnologyFocusFilterView.
-
-    NOTE: Both OnlineDiversity and OnlineTechnology FocusFilterViews could inherit from a singular CustomView.
-    """
+class TagFilterView(ListView):
+    TAG_OPTIONS = {
+        "diversity": DiversityFocus,
+        "technology": TechnologyFocus,
+    }
     template_name = "orgs/list.html"
-    model = Organization
+    model = Organization    
+    paginate_by: int = 25
+
+    def get_focus(self):
+        """Gets the tag and tag_value from the url"""
+        if (tag:=self.kwargs['tag'].lower()) in self.TAG_OPTIONS:
+            return {
+                "tag": tag,
+                "tag_value": self.TAG_OPTIONS[tag].objects.filter(name__iexact=self.kwargs["tag_value"])
+            }
+        
+        else:
+            raise Http404("Tag not found.")
+
+    def get_queryset(self) -> QuerySet:
+        """Filter by the tag and tag_value"""
+        orgs = get_by_params(
+            params=self.request.GET,
+            model=Organization,
+            )
+        print(orgs)
+        return orgs
 
     def get_context_data(self, **kwargs) -> _context:
-        context = super().get_context_data(**kwargs)
-        context["location"] = "Online"
-        return context
+        """add tag to context"""
+        return {
+            **super().get_context_data(**kwargs),
+            }

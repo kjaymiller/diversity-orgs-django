@@ -73,7 +73,7 @@
                 {% load org_extras %} 
                 {% for focus in object.diversity.all %}
                 <small class='mx-1'>
-                    <a href="{% url 'diversity_filter' focus.name %}{% if object.location %}{% urlparams location=object.location.pk %}{% endif %}">{{focus.name}}</a></small>
+                    <a href="{% url 'org_filter' %}{% urlparams diversity=focus %}{% if object.location %}{% urlparams city=object.location.name region=object.location.region country=object.location.country %}{% endif %}">{{focus.name}}</a></small>
                 {%endfor%}
             </div>
             {% endif %}
@@ -83,7 +83,8 @@
             <div class="flex items-baseline mx-3">
                 <h3 class="font-bold">Technology Focuses:</h3> 
                 {% for focus in object.technology.all %}
-                <small class='mx-1'>{{focus.name}}</small>
+                <small class='mx-1'>
+                    <a href="{% url 'org_filter' %}{% urlparams technology=focus %}{% if object.location %}{% urlparams city=object.location.name region=object.location.region country=object.location.country %}{% endif %}">{{focus.name}}</a></small>
                 {%endfor%}
             </div>
             {% endif %} 
@@ -115,9 +116,12 @@
         <div class="border-b-2 border-b-slate-100 py-1 my-3">
             {% if org.location %}
             <a href="{{org.get_absolute_url}}" class="hover:italic">{{org.location}}</a>
-            {% endif %}
+            {% else %}
             {% if org.online_only %}
             <a href="{{org.get_absolute_url}}" class="hover:italic">{{org}} - Online</a>
+            {% else%}
+            <a href="{{org.get_absolute_url}}" class="hover:italic">{{org}}</a>
+            {% endif %}
             {% endif %}
         </div>
         {% endfor %}

@@ -8,8 +8,8 @@
     {% block title %}{% endblock %} DiversityOrgs.tech</title>
     {% load static %}
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    {% comment %} <link href="{% static 'web/css/style.css' %}" rel="stylesheet"> {% endcomment %}
+    {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
+    <link href="{% static 'web/css/style.css' %}" rel="stylesheet">
     {% if map %}
         {% include 'assets/map_head_embed.html' %}
     {% endif %}
@@ -17,7 +17,7 @@
     {% block head %}{% endblock %}
 </head>
 <body {% if map %}onload="GetMap()"{% endif %}>
-        <div class="lg:mx-auto mx-4 lg:container min-h-screen">
+        <div class="mx-4 2xl:mx-auto lg:container min-h-screen">
             <div class="mt-5 mb-2 p-2 flex flex-wrap">
                 <h1 class="text-2xl lg:text-5xl font-bold mx-1"><a href="/">DiversityOrgs.Tech</a>
                 <small class="text-sm xl:text-sm font-light">Beta</small></a></h1>

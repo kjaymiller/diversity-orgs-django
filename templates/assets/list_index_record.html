@@ -10,7 +10,7 @@
         <h4 class="text-sm p-1 rounded hover:shadow bg-slate-50 rounded-full border">
             {% load org_extras %}
             {% if focus %}
-            <a href="/filter/diversity/{{focus}}{% if location %}{% urlparams location=location.pk %}{% endif %}">{{focus}}</a>
+            <a href="{% url 'org_filter' %}{% urlparams diversity=focus %}{% if location %}{% urlparams location=location %}{% endif %}">{{focus}}</a>
             {% endif %}
         </h4>
     {% endfor %}
