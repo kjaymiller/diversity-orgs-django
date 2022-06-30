@@ -1,4 +1,5 @@
-from typing import Any
+from typing import Any, TypeVar
+from django.db.models import Model, QuerySet
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, UpdateView, CreateView
@@ -46,6 +47,7 @@ def is_organizer(user: object, org:object) -> bool:
     
     return False
 
+_context = TypeVar('_context', bound=dict)
 
 # Create your views here.
 class HomePageView(ListView):
@@ -60,17 +62,12 @@ class HomePageView(ListView):
     template_name = "home.html"
     model = Organization
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs) -> _context:
         """
         Add featured_orgs, their parents, and the map trigger for `is_featured` flag
 
-        Args:
-            self (undefined):
-            **kwargs (undefined):
-
-        Returns:
-            dict[str, Any]
-
+        context values added:
+            featured_orgs (list): A list of featured organizations #TODO: #28 make this the queryset using `def get_queryset()`
         """        
         context = super().get_context_data(**kwargs)
         context["featured_orgs"] = self.model.objects.filter(is_featured=True)
@@ -143,17 +140,13 @@ class SearchResultsView(ListView):
         )
         return queryset
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs) -> _context:
         """
         Add the search query and the parents aggregates to the context.
-
-        Returns:
-            dict[str, Any]: The context data
         """
         context = super().get_context_data(**kwargs)
         context["query"] = self.request.GET.get("q")
         context["parents"] = self.object_list.values("parent__name").distinct()
-        print(context["parents"])
         return context
 
 
@@ -179,14 +172,11 @@ class OrgDetailView(DetailView):
     model = Organization
     form_class = CreateOrgForm
     
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs) -> _context:
         """
         Add the organization's parent and children to the context.
         Enable the map for all of the orgs children.
         Uses focuses and focus parents to build similar organizations.
-
-        Returns:
-            dict[str, Any]: _description_
         """
         context = super().get_context_data(**kwargs)
         context['is_organizer'] = is_organizer(self.request.user, self.object) or self.request.user.is_superuser
@@ -342,13 +332,8 @@ class ReportViolationView(CreateView):
         """
         return self.object.get_absolute_url()
 
-    def get_context_data(self, *args, **kwargs) -> dict[str, Any]:
-        """
-        Add the organization to the context.
-
-        Returns:
-            dict: context data
-        """
+    def get_context_data(self, *args, **kwargs) -> _context:
+        """Add the organization to the context"""
         context = super().get_context_data(*args, **kwargs)
         context["organization"] = Organization.objects.get(slug=self.kwargs['slug'])
         return context
@@ -485,13 +470,8 @@ class LocationFilterView(ListView):
         """
         return Organization.objects.filter(location__pk=self.kwargs["pk"])
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        """
-        Add the location to the context.
-
-        Returns:
-            dict: context data
-        """
+    def get_context_data(self, **kwargs) -> _context:
+        """Add the location to the context."""
         context = super().get_context_data(**kwargs)
         context["location"] = Location.objects.get(pk=self.kwargs["pk"])
         return context
@@ -508,13 +488,10 @@ class DiversityFocusView(ListView):
     model = DiversityFocus
     paginate_by=50
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs) -> _context:
         """
         Add a focus and focus_filter to the context.
         This can be used to distinguish diversity focuses from other tags.
-
-        Returns:
-            dict: context data
         """
         context = super().get_context_data(**kwargs)
         context['focus'] = 'diversity'
@@ -548,7 +525,7 @@ class DiversityFocusFilterView(ListView):
             return queryset.filter(location=location) # Disconnect and filter by location
         return queryset
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs) -> _context:
         """
         Custom context data for the view to pass into the template. 
         
@@ -559,9 +536,6 @@ class DiversityFocusFilterView(ListView):
                 NOTE: there was an issue passing geojson directly to the template, so this is a workaround.
     `       AZURE_MAPS_KEY: The key for the Azure Maps API. See #18
             location: (Optional) The location passed into the request.
-
-        Returns:
-            dict: context data
         """
         context = super().get_context_data(**kwargs)
         context["tag"] = DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
@@ -586,13 +560,10 @@ class TechnologyFocusView(ListView):
     model = TechnologyFocus
     paginate_by=50
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs) -> _context:
         """
         Add a focus and focus_filter to the context.
         This can be used to distinguish diversity focuses from other tags.
-
-        Returns:
-            dict: context data
         """
         context = super().get_context_data(**kwargs)
         context["focus"] = "technology"
@@ -625,15 +596,12 @@ class TechnologyFocusFilterView(ListView):
         
         return orgs
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs) -> _context:
 
         """
         Custom context data for the view to pass into the template. 
 
         NOTE: With most of this functionality being a duplicate of the DiversityFocusFilterView, a custom ViewClass could be DRYer solution.
-
-        Returns the modified context
-
         See #26
         """
 
@@ -665,8 +633,8 @@ class OnlineDiversityFocusFilterView(ListView):
         """Filter the organizations by the online_only and optionally the location."""
         return Organization.objects.filter(online_only=True).filter(diversity_focus=self.kwargs["diversity"])
 
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
-        """Set the location to "Online" prior to passing in the context data."""
+    def get_context_data(self, **kwargs) -> _context:
+        """Set the location to `Online`"""
         context = super().get_context_data(**kwargs)
         context["location"] = "Online"
         return context
@@ -684,7 +652,8 @@ class OnlineTechnologyFocusFilterView(ListView):
     def get_queryset(self):
         return Organization.objects.filter(diversity_focus=self.kwargs["technology"])
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> _context:
+        """Set the location to `Online`"""
         context = super().get_context_data(**kwargs)
         context["location"] = "Online"
         return context
