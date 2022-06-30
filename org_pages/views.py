@@ -554,56 +554,6 @@ class DiversityFocusView(ListView):
         return context
 
 
-class DiversityFocusFilterView(ListView):
-    """
-    List organizations based on the diversity focus.
-
-    Inheritance:
-        ListView: Django BaseView for displaying a list of objects.
-    """
-    template_name = "orgs/list.html"
-    model = Organization
-    paginate_by=50
-
-    def get_queryset(self) -> dict[str, Any]:
-        """
-        Filter the organizations by the diversity focus and optionally the location.
-
-        TODO: #25 Make this support multiple diversity focuses.
-
-        Returns:
-            dict: QuerySet of organizations
-        """
-        diversity=DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
-        queryset = Organization.objects.filter(diversity=diversity)
-        if location:=self.request.GET.get('location', None):
-            return queryset.filter(location=location) # Disconnect and filter by location
-        return queryset
-
-    def get_context_data(self, **kwargs) -> _context:
-        """
-        Custom context data for the view to pass into the template. 
-        
-        These are the tags that are being added:
-            tag: The Diversity Focus object that was passed in the url
-            focus: The focus tag of the view, which is 'diversity'
-            map: switch to turn on the map view and request geodata from the API for the queryset.
-                NOTE: there was an issue passing geojson directly to the template, so this is a workaround.
-    `       AZURE_MAPS_KEY: The key for the Azure Maps API. See #18
-            location: (Optional) The location passed into the request.
-        """
-        context = super().get_context_data(**kwargs)
-        context["tag"] = DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
-        context['focus'] = 'diversity'
-        context["map"] = f"{context['focus']}_focus={context['tag'].id}"
-        context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
-
-        if location:=self.request.GET.get('location', None):
-            context["location"] = Location.objects.get(pk=location)
-            context["map"] += f"&location={location}"
-        
-        return context
-
 class TechnologyFocusView(ListView):
     """
     List of the technology focuses.
@@ -626,83 +576,6 @@ class TechnologyFocusView(ListView):
         return context
     
 
-class TechnologyFocusFilterView(ListView):
-    """
-    List organizations based on the technology focus.
-
-    Inheritance:
-        ListView: Django BaseView for displaying a list of objects.
-    """
-    template_name = "orgs/list.html"
-    model = Organization
-    paginate_by: int = 25
-
-    def get_queryset(self):
-        """Filter by technology focus and location if provided."""
-        orgs = Organization.objects.filter(technology__name__iexact=self.kwargs["technology"])
-        
-        if location:=self.request.GET.get('location', None):
-            return orgs.filter(location__pk=location)
-        
-        return orgs
-
-    def get_context_data(self, **kwargs) -> _context:
-
-        """
-        Custom context data for the view to pass into the template. 
-
-        NOTE: With most of this functionality being a duplicate of the DiversityFocusFilterView, a custom ViewClass could be DRYer solution.
-        See #26
-        """
-
-        context = super().get_context_data(**kwargs)
-        context["focus"] = "technology"
-        context["tag"] = TechnologyFocus.objects.get(name__iexact=self.kwargs["technology"])
-        context["map"] = f"{context['focus']}_focus={context['tag'].id}"
-        context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
-
-
-        if location:=self.kwargs.get('location', None):
-            context["location"] = Location.objects.get(pk=location)
-            context["map"] += f"&location={location}"
-            
-        return context
-
-
-class OnlineTagFilterView(ListView):
-    TAG_OPTIONS = {
-        "diversity": DiversityFocus,
-        "technology": TechnologyFocus
-    }
-    template_name = "orgs/list.html"
-    model = Organization    
-    paginate_by: int = 25
-
-    def get_focus(self):
-        """Gets the tag and tag_value from the url"""
-        if (tag:=self.kwargs['tag'].lower()) in self.TAG_OPTIONS:
-            return {
-                "tag": tag,
-                "tag_value": self.TAG_OPTIONS[tag].objects.filter(name__iexact=self.kwargs["tag_value"])
-            }
-        
-        else:
-            raise Http404("Tag not found.")
-
-    def get_queryset(self) -> QuerySet:
-        """Filter by the tag and tag_value"""
-        focus = self.get_focus()
-        return Organization.objects.filter(online_only=True, **{f'{focus["tag"]}__in': focus["tag_value"]})
-
-    def get_context_data(self, **kwargs) -> _context:
-        """add tag to context"""
-        return {
-            "online_only": True,
-            **super().get_context_data(**kwargs),
-            **self.get_focus(),
-            }
-
-
 class TagFilterView(ListView):
     TAG_OPTIONS = {
         "diversity": DiversityFocus,
@@ -710,7 +583,7 @@ class TagFilterView(ListView):
     }
     template_name = "orgs/list.html"
     model = Organization    
-    paginate_by: int = 25
+    paginate_by: int = 50
 
     def get_focus(self):
         """Gets the tag and tag_value from the url"""
