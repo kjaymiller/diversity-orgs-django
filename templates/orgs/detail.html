@@ -67,11 +67,11 @@
 
         {# Diversity Focuses #}
         <div class="flex items-baseline mr-3">
-            {% if object.diversity_focus.all %}
+            {% if object.diversity.all %}
             <div class="flex items-baseline mr-3">
                 <h3 class="font-bold">Diversity Focuses:</h3>
                 {% load org_extras %} 
-                {% for focus in object.diversity_focus.all %}
+                {% for focus in object.diversity.all %}
                 <small class='mx-1'>
                     <a href="{% url 'diversity_filter' focus.name %}{% if object.location %}{% urlparams location=object.location.pk %}{% endif %}">{{focus.name}}</a></small>
                 {%endfor%}
