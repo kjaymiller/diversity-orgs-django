@@ -12,12 +12,12 @@ from accounts.models import CustomUser
 
 class OrgForm(forms.ModelForm):
     location = forms.CharField(label="Location", required=False, empty_value=None)
-    diversity_focus = forms.CharField(
-        help_text=Organization._meta.get_field('diversity_focus').help_text,
+    diversity = forms.CharField(
+        help_text=Organization._meta.get_field('diversity').help_text,
         label="Diversity Focuses", required=False,
     )
-    technology_focus = forms.CharField(
-        help_text=Organization._meta.get_field('technology_focus').help_text,
+    technology = forms.CharField(
+        help_text=Organization._meta.get_field('technology').help_text,
         label="Technology Focuses",required=False,
         )
     organizers = forms.CharField(
@@ -40,7 +40,7 @@ class OrgForm(forms.ModelForm):
             field.widget.attrs["class"] = "border my-1 mx-3 w-96 focus:shadow"
             
     def clean(self):
-        for field_name, model in (('diversity_focus', DiversityFocus), ('technology_focus', TechnologyFocus)):
+        for field_name, model in (('diversity', DiversityFocus), ('technology', TechnologyFocus)):
             if self.cleaned_data.get(field_name):
                 values = [x.strip() for x in self.cleaned_data.pop(field_name).split(",")]
                 self.cleaned_data[field_name] = [model.objects.get_or_create(name__iexact=x)[0] for x in values]

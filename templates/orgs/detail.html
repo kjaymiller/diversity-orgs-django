@@ -67,11 +67,11 @@
 
         {# Diversity Focuses #}
         <div class="flex items-baseline mr-3">
-            {% if object.diversity_focus.all %}
+            {% if object.diversity.all %}
             <div class="flex items-baseline mr-3">
                 <h3 class="font-bold">Diversity Focuses:</h3>
                 {% load org_extras %} 
-                {% for focus in object.diversity_focus.all %}
+                {% for focus in object.diversity.all %}
                 <small class='mx-1'>
                     <a href="{% url 'diversity_filter' focus.name %}{% if object.location %}{% urlparams location=object.location.pk %}{% endif %}">{{focus.name}}</a></small>
                 {%endfor%}
@@ -79,10 +79,10 @@
             {% endif %}
                         
             {# Technology Focuses #}
-            {% if object.technology_focus.all %}
+            {% if object.technology.all %}
             <div class="flex items-baseline mx-3">
                 <h3 class="font-bold">Technology Focuses:</h3> 
-                {% for focus in object.technology_focus.all %}
+                {% for focus in object.technology.all %}
                 <small class='mx-1'>{{focus.name}}</small>
                 {%endfor%}
             </div>

@@ -119,17 +119,17 @@ class SearchResultsView(ListView):
         ):
             return location_match
 
-        if diversity_match := Organization.objects.filter(diversity_focus__name=query):
+        if diversity_match := Organization.objects.filter(diversity__name=query):
             return diversity_match
 
-        if techonology_match := Organization.objects.filter(technology_focus__name=query):
+        if techonology_match := Organization.objects.filter(technology__name=query):
             return techonology_match
 
         # Create vectors for search
         query = SearchQuery(self.request.GET.get("q"), search_type="websearch")
         vector = (
-            SearchVector("diversity_focus__name", weight="B")
-            + SearchVector("technology_focus__name", weight="B")
+            SearchVector("diversity__name", weight="B")
+            + SearchVector("technology__name", weight="B")
             + SearchVector("location__name", weight="C")
             + SearchVector("location__region", weight="C")
             + SearchVector("location__country", weight="C")
@@ -191,30 +191,30 @@ class OrgDetailView(DetailView):
             context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
             
         else:
-            diversity_focuses = []
+            diversities = []
 
-            for focus in self.object.diversity_focus.all():
+            for focus in self.object.diversity.all():
                 if focus.parents:
                     for parent in focus.parents.all():
-                        diversity_focuses.append(parent)
+                        diversities.append(parent)
 
-            diversity_focuses.extend(self.object.diversity_focus.all())
-            technology_focuses = []
-            for focus in self.object.technology_focus.all():
+            diversities.extend(self.object.diversity.all())
+            technologies = []
+            for focus in self.object.technology.all():
                 if focus.parents:
                     for parent in focus.parents.all():
-                        technology_focuses.append(parent)
-            technology_focuses.extend(self.object.technology_focus.all())
+                        technologies.append(parent)
+            technologies.extend(self.object.technology.all())
 
             other_orgs = self.model.objects.filter(
                 location=self.object.location,
             ).exclude(pk=self.object.pk)
 
-            if diversity_focuses:
-                other_orgs = other_orgs.filter(diversity_focus__in=diversity_focuses)
+            if diversities:
+                other_orgs = other_orgs.filter(diversity__in=diversities)
 
-            if technology_focuses:
-                other_orgs = other_orgs.filter(technology_focus__in=technology_focuses)
+            if technologies:
+                other_orgs = other_orgs.filter(technology__in=technologies)
             context["other_orgs"] = other_orgs.distinct()
         return context
 
@@ -281,9 +281,10 @@ class SuggestEditView(UpdateView):
             dict[str, Any]: The initial data to pass into the form.
         """
         initial = super().get_initial(*args, **kwargs)
-        initial["diversity_focus"] = (", ").join([x.name for x in self.object.diversity_focus.all()])
-        initial["technology_focus"] = (", ").join([x.name for x in self.object.technology_focus.all()])
-        initial["organizers"] = (", ").join([x.email for x in self.object.organizers.all()]) # TODO: #22 REMOVE NEED FOR THIS
+        initial["diversity"] = (", ").join([x.name for x in self.object.diversity.all()])
+        initial["technology"] = (", ").join([x.name for x in self.object.technology.all()])
+        initial["organizers"] = (", ").join([x.email for x in self.object.organizers.all()])
+
         if self.object.location:
             location_fields = (
                 self.object.location.name,
@@ -379,8 +380,8 @@ class UpdateOrgView(LoginRequiredMixin, UpdateView):
             dict: initial data
         """
         initial = super().get_initial(*args, **kwargs)
-        initial["diversity_focus"] = (", ").join([x.name for x in self.object.diversity_focus.all()])
-        initial["technology_focus"] = (", ").join([x.name for x in self.object.technology_focus.all()])
+        initial["diversity"] = (", ").join([x.name for x in self.object.diversity.all()])
+        initial["technology"] = (", ").join([x.name for x in self.object.technology.all()])
         initial["organizers"] = (", ").join([x.email for x in self.object.organizers.all()])
     
         if self.object.parent:
@@ -524,7 +525,7 @@ class DiversityFocusFilterView(ListView):
             dict: QuerySet of organizations
         """
         diversity=DiversityFocus.objects.get(name__iexact=self.kwargs["diversity"])
-        queryset = Organization.objects.filter(diversity_focus=diversity)
+        queryset = Organization.objects.filter(diversity=diversity)
         if location:=self.request.GET.get('location', None):
             return queryset.filter(location=location) # Disconnect and filter by location
         return queryset
@@ -586,14 +587,9 @@ class TechnologyFocusFilterView(ListView):
     model = Organization
     paginate_by: int = 25
 
-    def get_queryset(self) -> dict[str, Any]:
-        """
-        Filter the organizations by the technology focus and optionally the location.
-
-        Returns:
-            object: QuerySet of organizations
-        """
-        orgs = Organization.objects.filter(technology_focus__name__iexact=self.kwargs["technology"])
+    def get_queryset(self):
+        """Filter by technology focus and location if provided."""
+        orgs = Organization.objects.filter(technology__name__iexact=self.kwargs["technology"])
         
         if location:=self.request.GET.get('location', None):
             return orgs.filter(location__pk=location)
@@ -623,6 +619,26 @@ class TechnologyFocusFilterView(ListView):
         return context
 
 
+
+class OnlineTagFilterView(ListView):
+    TAG_OPTIONS = {
+        "diversity": DiversityFocus,
+        "technology": TechnologyFocus
+    }
+    template_name = "orgs/list.html"
+    model = Organization    
+
+    def get_focus(self):
+        """Gets the tag and tag_value from the url"""
+        if (tag:=self.kwargs['tag'].lower()) in self.TAG_OPTIONS:
+            return {
+                'name': tag,
+                'value': self.TAG_OPTIONS[tag].objects.get(pk=self.kwargs["tag_value"])
+                }
+        
+        else:
+            raise Http404("Tag not found.")
+
 class OnlineDiversityFocusFilterView(ListView):
     """
     A filterview ListViews but for when the organization is online_only
@@ -640,9 +656,16 @@ class OnlineDiversityFocusFilterView(ListView):
     def get_context_data(self, **kwargs) -> _context:
         """Set the location to `Online`"""
         context = super().get_context_data(**kwargs)
-        context["location"] = "Online"
+        context["tag"] = self.get_focus()
         return context
 
+    def get_queryset(self):
+        """Sets the queryset to diversity focus tags that are online."""
+        tag = self.get_focus()
+        return Organization.objects.filter(
+                online_only=True,
+                **{tag['name']: tag['value']}
+        )
 
 class OnlineTechnologyFocusFilterView(ListView):
     """
@@ -653,11 +676,7 @@ class OnlineTechnologyFocusFilterView(ListView):
     template_name = "orgs/list.html"
     model = Organization
 
-    def get_queryset(self):
-        return Organization.objects.filter(diversity_focus=self.kwargs["technology"])
-
     def get_context_data(self, **kwargs) -> _context:
-        """Set the location to `Online`"""
         context = super().get_context_data(**kwargs)
         context["location"] = "Online"
         return context
