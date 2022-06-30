@@ -3,7 +3,7 @@
         <h3 class="text-2xl font-bold"><a href="{% url 'parent_org_detail' org.pk %}">{{org}}</a></h3>
     </div>
     <div class="flex">
-        {% for focus in org.technology_focus.all %}
+        {% for focus in org.technology.all %}
         <h3>{{focus}}</h3>
         {% endfor %}
     </div>

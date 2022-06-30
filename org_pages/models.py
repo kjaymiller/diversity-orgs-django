@@ -120,8 +120,8 @@ class Organization(models.Model):
         blank=True,
         help_text="Description of the organization. This will appear on the organization's page.",
         )
-    diversity_focus = models.ManyToManyField(
-        DiversityFocus, related_name="parent_org_diversity_focus", blank=True,
+    diversity = models.ManyToManyField(
+        DiversityFocus, related_name="parent_org_diversity", blank=True,
         help_text="Diversity focuses for the organization. Select as many as apply. The more specific the better. Examples: Black Women, LGBTQIA+",
     )
     job_board = models.URLField(
@@ -172,8 +172,8 @@ class Organization(models.Model):
         "self", on_delete=models.CASCADE, blank=True, null=True,
         help_text="Is this organization a sub-organization of another org? NOTE:The Parent Org Must exist before this org can be created.",
     )
-    technology_focus = models.ManyToManyField(
-        TechnologyFocus, blank=True, related_name="parent_org_technology_focus",
+    technology = models.ManyToManyField(
+        TechnologyFocus, blank=True, related_name="parent_org_technology",
         help_text="Technology focuses for the organization. If your org doesn't focus on a particular tech topic, Leave Blank",
     )
     logo = models.ImageField(
@@ -202,11 +202,11 @@ class Organization(models.Model):
             if not self.code_of_conduct:
                 self.code_of_conduct = self.parent.code_of_conduct
 
-            if not self.diversity_focus.all():
-                self.diversity_focus.set(self.parent.diversity_focus.all())
+            if not self.diversity.all():
+                self.diversity.set(self.parent.diversity.all())
 
-            if not self.technology_focus.all():
-                self.technology_focus.set(self.parent.technology_focus.all())
+            if not self.technology.all():
+                self.technology.set(self.parent.technology.all())
 
         if not self.slug:
             self.slug = slugify(self.name)
@@ -222,8 +222,8 @@ class Organization(models.Model):
     def set_children_focuses(self):
         for obj in Organization.objects.filter(parent=self):
             obj.description = self.description
-            obj.diversity_focus.set(self.diversity_focus.all())
-            obj.technology_focus.set(self.technology_focus.all())
+            obj.diversity.set(self.diversity.all())
+            obj.technology.set(self.technology.all())
             if not obj.logo:
                 obj.logo = self.logo
             obj.save()

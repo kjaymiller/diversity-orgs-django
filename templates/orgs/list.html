@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="">
-    <h1>Showing Orgs {% if focus %} labeled <strong>{{tag}}</strong>{% endif %}
+    <h1>Showing Orgs {% if tag %} with {{tag.name}}<strong>{{tag.value}}</strong>{% endif %}
      {% if location %} in {{location}}{% endif %}</h1>
 <h2 class="text-sm"> Showing {{page_obj.start_index}} - {{page_obj.end_index}} of {{page_obj.paginator.count}} results</h2>
     {% if focus and location %}

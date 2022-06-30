@@ -79,10 +79,10 @@
             {% endif %}
                         
             {# Technology Focuses #}
-            {% if object.technology_focus.all %}
+            {% if object.technology.all %}
             <div class="flex items-baseline mx-3">
                 <h3 class="font-bold">Technology Focuses:</h3> 
-                {% for focus in object.technology_focus.all %}
+                {% for focus in object.technology.all %}
                 <small class='mx-1'>{{focus.name}}</small>
                 {%endfor%}
             </div>
