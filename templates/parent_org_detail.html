@@ -22,11 +22,11 @@
             </div>
             <div class="flex items-baseline">
             <h3 class="font-bold">Diversity Focuses:</h3> 
-            {% for focus in parentorganization.diversity_focus.all %}
+            {% for focus in parentorganization.diversity.all %}
             <small class='mx-1'>{{focus.name}}</small>
             {%endfor%}
             <h3 class="font-bold">Technology Focuses:</h3> 
-            {% for focus in parentorganization.technology_focus.all %}
+            {% for focus in parentorganization.technology.all %}
             <small class='mx-1'>{{focus.name}}</small>
             {%endfor%}
         </div>

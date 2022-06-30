@@ -21,15 +21,15 @@ urlpatterns = [
         name="technology_filter",
     ),
     path(
-        "filter/online/diversity/<str:diversity>",
-        views.OnlineDiversityFocusFilterView.as_view(),
-        name="online_diversity_filter",
+        "filter/online/<str:tag>/<int:tag_value>",
+        views.OnlineTagFilterView.as_view(),
+        name="online_tag_filter",
     ),
-    path(
-        "filter/online/technology/<str:technology>",
-        views.OnlineTechnologyFocusFilterView.as_view(),
-        name="online_technology_filter",
-    ),
+    # path(
+    #     "filter/online/technology/<str:technology>",
+    #     views.OnlineTechnologyFocusFilterView.as_view(),
+    #     name="online_technology_filter",
+    # ),
     path('orgs/<slug:slug>/violationreport', views.ReportViolationView.as_view(), name="violation_report"),
     path('tags/technology', views.TechnologyFocusView.as_view(), name="technology"),
     path('tags/diversity', views.DiversityFocusView.as_view(), name="diversity"),

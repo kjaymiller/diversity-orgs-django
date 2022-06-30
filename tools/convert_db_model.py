@@ -21,8 +21,8 @@ for org in data:
     if "name" not in org or Organization.objects.filter(name=org["name"]):
         continue
 
-    technology_focus = [create_or_add(TechnologyFocus, focus) for focus in org.get("technology_focus", [])]
-    diversity_focus = [create_or_add(DiversityFocus, focus) for focus in org.get("diversity_focus", [])]
+    technology = [create_or_add(TechnologyFocus, focus) for focus in org.get("technology", [])]
+    diversity = [create_or_add(DiversityFocus, focus) for focus in org.get("diversity", [])]
 
     obj = Organization(
         name=org.get("name"),
@@ -31,8 +31,8 @@ for org in data:
 
     obj.save()
 
-    obj.technology_focus.set(technology_focus)
-    obj.diversity_focus.set(diversity_focus)
+    obj.technology.set(technology)
+    obj.diversity.set(diversity)
     obj.save()
 
     if parent_org := org.get("parent_organization"):
