@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+from django.forms.renderers import TemplatesSetting
+
+class CustomFormRenderer(TemplatesSetting):
+    form_template_name = "/forms/org_forms.html"
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
+    "django.forms",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
@@ -86,6 +91,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = "diversity_orgs.settings.CustomFormRenderer"
 
 WSGI_APPLICATION = "diversity_orgs.wsgi.application"
 

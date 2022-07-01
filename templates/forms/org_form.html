@@ -1,0 +1,13 @@
+{% for field in form %}
+<div class="my-3">
+    {% if field.errors %}
+    <div class="rounded p-4 bg-red-200 text-red-700">{{ field.errors }}</div>
+    {% endif %}
+    <div class="flex items-start">
+        <div class="font-bold">{{ field.label_tag }}</div><div> {{ field }}</div>
+    </div>
+    {% comment %} {% if field.help_text %}
+    <p class="help">{{ field.help_text|safe }}</p>
+    {% endif %} {% endcomment %}
+</div>
+{% endfor %}

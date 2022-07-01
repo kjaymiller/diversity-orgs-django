@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.urls import reverse
 from uuid import uuid4
 from django.utils.text import slugify
@@ -15,6 +16,7 @@ class DiversityFocus(models.Model):
     name = models.CharField(max_length=200)
     parents = models.ManyToManyField("self", blank=True, symmetrical=False)
     description = models.TextField(blank=True)
+    other_names = ArrayField(models.CharField(max_length=200), blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -27,10 +29,11 @@ class DiversityFocus(models.Model):
 class TechnologyFocus(models.Model):
     name = models.CharField(max_length=200)
     parents = models.ManyToManyField("self", blank=True, symmetrical=False)
+    other_names = ArrayField(models.CharField(max_length=200), blank=True, null=True)
 
     class Meta:
         ordering = ["name"]
-        verbose_name_plural = "Technology Focuses"
+        verbose_name_plural = "Technologies"
 
     def __str__(self):
         return self.name
@@ -137,8 +140,9 @@ class Organization(models.Model):
         blank=True, null=True,
         help_text="URL to the organization's website.",
     )
-    social_links = models.TextField(
-        blank=True,
+    social_links = ArrayField(
+        base_field=models.URLField(),
+        default=list,
         help_text="Social media links for the organization. Put each url on a new line.",
         )
     events_link = models.URLField(
@@ -246,6 +250,28 @@ class SuggestedEdit(models.Model):
         user = self.user or "Anonymous"
         return f"{self.organization.name} - {user}"
 
+
+class OrgClaim(models.Model):
+    organization = models.ForeignKey(
+        Organization, on_delete=models.SET_NULL,
+        help_text="Organization the claim should go to.",
+        null=True,
+    )
+    user = models.ForeignKey(
+        CustomUser, on_delete=models.SET_NULL,
+        help_text="User who suggested the claim.",
+        null=True,
+    )
+    description = models.TextField(
+        help_text="What information can we use to validate your claim?",
+    )
+
+    def get_absolute_url(self):
+        return reverse("org_detail", kwargs={"slug": self.organization.slug})
+    
+    def __str__(self):
+        user = self.user or "Anonymous"
+        return f"{self.organization.name} - {user}"
 
 class ViolationReport(models.Model):
     organization = models.ForeignKey(

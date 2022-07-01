@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.postgres.forms import SimpleArrayField
 from .models import (
     Organization,
     Location,
@@ -11,6 +12,16 @@ from accounts.models import CustomUser
 
 
 class OrgForm(forms.ModelForm):
+    template_name = "forms/org_form.html"
+    social_links = SimpleArrayField(
+            forms.CharField(
+                widget=forms.Textarea(
+                    attrs={'rows':4, 'cols':25}
+                ),
+                max_length=200),
+            delimiter='\n',
+            required=False,
+            )
     location = forms.CharField(label="Location", required=False, empty_value=None)
     diversity = forms.CharField(
         help_text=Organization._meta.get_field('diversity').help_text,
@@ -18,32 +29,34 @@ class OrgForm(forms.ModelForm):
     )
     technology = forms.CharField(
         help_text=Organization._meta.get_field('technology').help_text,
-        label="Technology Focuses",required=False,
+        label="Technology Focuses", required=False,
         )
     organizers = forms.CharField(
         help_text=Organization._meta.get_field('organizers').help_text,
-        widget=forms.Textarea(), required=False, empty_value=''
+        widget=forms.Textarea(attrs={'rows':3, 'cols':25}), required=False, empty_value=''
         )
     parent = forms.CharField(
         help_text=Organization._meta.get_field('parent').help_text,
         label="Parent Organization", required=False, empty_value=None,
         )
 
+
     class Meta:
         model = Organization
         exclude = ('is_featured', 'reviewed')
+        widgets = {'paid': forms.Select(choices=((True, 'Yes'), (False, 'No')))}
 
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
-            field.widget.attrs["class"] = "border my-1 mx-3 w-96 focus:shadow"
+            field.widget.attrs["class"] = "rounded border p-1 my-1 mx-3 w-96 focus:shadow border-slate-300"
             
     def clean(self):
         for field_name, model in (('diversity', DiversityFocus), ('technology', TechnologyFocus)):
             if self.cleaned_data.get(field_name):
                 values = [x.strip() for x in self.cleaned_data.pop(field_name).split(",")]
-                self.cleaned_data[field_name] = [model.objects.get_or_create(name__iexact=x)[0] for x in values]
+                self.cleaned_data[field_name] = [model.objects.get_or_create(defaults={'name': x}, name__iexact=x)[0] for x in values]
 
         if self.cleaned_data.get('parent'):
             parent = Organization.objects.get(name=self.cleaned_data.get('parent'))
@@ -61,6 +74,8 @@ class OrgForm(forms.ModelForm):
                 self.cleaned_data['location'] = location
 
 class CreateOrgForm(OrgForm):
+    template_name = "forms/org_form.html"
+
     class Meta:
         model = Organization
         exclude = ('slug', "organizers", "reviewed", "is_featured", "active")
@@ -75,6 +90,7 @@ class CreateOrgForm(OrgForm):
 
 class SuggestEditForm(OrgForm):
     id = forms.IntegerField(widget=forms.HiddenInput())
+    template_name = "forms/org_form.html"
 
     class Meta:
         model = Organization
@@ -89,7 +105,8 @@ class SuggestEditForm(OrgForm):
 
 
 class ViolationReportForm(forms.ModelForm):
-    
+    template_name = "forms/org_form.html"
+
     class Meta:
         model = ViolationReport
         exclude = ('user', 'organization')

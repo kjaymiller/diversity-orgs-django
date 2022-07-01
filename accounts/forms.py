@@ -6,6 +6,7 @@ from accounts.models import CustomUser
 
 class CustomUserCreationForm(UserCreationForm):
     field_order = ["username", "password1", "password2", "email", "twitter", "github", "linkedin", "agrees_to_coc"]
+    template_name = "forms/org_form.html"
 
     class Meta(UserCreationForm.Meta):
         fields = ('username', 'email', 'twitter', 'github', 'linkedin', 'agrees_to_coc')
@@ -25,6 +26,8 @@ class AdminUserChangeForm(UserChangeForm):
         fields = "__all__"
 
 class CustomUserChangeForm(UserChangeForm):
+    template_name = "forms/org_form.html"
+
     class Meta:
         model = CustomUser
         fields = ("username", "email",)
