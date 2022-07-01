@@ -85,7 +85,7 @@ def get_by_params(params: dict[str, Any], model: Organization=Organization,) -> 
             queries,
             **bool_params,
             **get_location_q(location_params),
-        )
+        ).distinct()
 
 _context = TypeVar('_context', bound=dict)
 
