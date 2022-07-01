@@ -5,18 +5,32 @@
     <div>
     <h3 class="font-bold mr-1 text-lg"><a href="{{org.get_absolute_url}}">{{org}}</a></h3>
     <div class="flex items-center">
-    <h3 class="font-bold pr-2">Diversity Focus:</h3>
-    {% for focus in org.diversity.all %}
-        <h4 class="text-sm p-1 rounded hover:shadow bg-slate-50 rounded-full border">
-            {% load org_extras %}
-            {% if focus %}
-            <a href="{% url 'org_filter' %}{% urlparams diversity=focus %}{% if location %}{% urlparams location=location %}{% endif %}">{{focus}}</a>
-            {% endif %}
-        </h4>
-    {% endfor %}
+        
+        <div class="flex items-center mr-7">
+            <h3 class="font-bold pr-2 text-sm">Diversity Focus:</h3>
+            {% for focus in org.diversity.all %}
+            <h4 class="text-sm p-1 rounded hover:shadow bg-slate-50 rounded-full border">
+                {% load org_extras %}
+                {% if focus %}
+                <a href="{% url 'org_filter' %}{% urlparams diversity=focus %}{% if location %}{% urlparams city=location.name region=location.region county=location.country %}{% endif %}">{{focus}}</a>
+                {% endif %}
+            </h4>
+            {% endfor %}
+        </div>
+        
+        <div class="flex items-center ml-7">
+            <h3 class="font-bold pr-2 text-sm">Technologies:</h3>    
+            {% for focus in org.technology.all %}
+                <h4 class="text-sm p-1 rounded hover:shadow bg-slate-50 rounded-full border">
+                    <a href="{% url 'org_filter' %}{% urlparams technology=focus %}{% if location %}{% urlparams city=location.name region=location.region county=location.country %}{% endif %}" class="text-slate-50 hover:text-white">
+                        {{focus}}
+                    </a>
+                </h4>
+            {% endfor %}
+        </div>
     </div>
     {% if org.location %}
-        <h4 class="font-light">{{org.location}}</h4>
+        <h4 class="font-light text-xs">{{org.location}}</h4>
     {% endif %}
     </div>
     </div>

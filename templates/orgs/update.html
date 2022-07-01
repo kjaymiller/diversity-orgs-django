@@ -7,7 +7,7 @@ Update <span class="font-bold">{{object.name}}</span>:
 </h1>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
+    {{ form }}
     <button type="submit" class="border p-1 rounded bg-green-400">Update</button>
   </form>
 {% endblock %}
