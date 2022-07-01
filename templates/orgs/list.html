@@ -8,7 +8,8 @@
     <h2 class="text-sm">See All Organizations Tagged: <a href="/filter/{{focus}}/{{tag}}"> class="font-bold hover:underline">{{tag}}</a></h2>
     {% endif %}
     {% if location %}
-    <h2 class="text-sm">See All Organizations in <a class="hover:underline font-bold" href="{% url 'location_filter' location.pk %}">{{location}}</a></h2>  
+    {% load org_extras %} 
+    <h2 class="text-sm">See All Organizations in <a class="hover:underline font-bold" href="{% url 'org_filter' %}{% urlparams city=object.location.name region=object.location.region country=object.location.country %}">{{location}}</a></h2>  
     {% endif %}
 </div>
 

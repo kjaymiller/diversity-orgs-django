@@ -76,9 +76,6 @@ class Location(models.Model):
                 self.longitude = result["position"]["lon"]
         return super().save()
 
-    def get_absolute_url(self):
-        return reverse("location_filter", kwargs={"pk": self.pk})
-
 
 class Organization(models.Model):
     USER_GROUP = 'USER_GROUP'
