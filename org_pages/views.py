@@ -2,7 +2,7 @@ from typing import Any, TypeVar
 from django.http import Http404, HttpResponse
 from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, UpdateView, CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.conf import settings
 from django.db.models import Q, QuerySet
 from django.contrib.postgres.search import SearchQuery, SearchVector, SearchRank
@@ -105,7 +105,6 @@ class HomePageView(ListView):
         """        
 
         context = super().get_context_data(**kwargs)
-
         context['aggs'] = [self.model.objects.get(name=obj['parent__name']) for obj in self.object_list]
         context["map"] = "is_featured=True"
         context["AZURE_MAPS_KEY"] = settings.AZURE_MAPS_KEY
@@ -238,7 +237,7 @@ class CreateOrgView(LoginRequiredMixin, CreateView):
 
 class SuggestEditView(UpdateView):
     """Form that allows users to suggest edits to an organization page."""
-    template_name = "orgs/update.html" # TODO:Create #20 Custom Template
+    template_name = "orgs/update.html"
     form_class = SuggestEditForm
     model = Organization 
 
@@ -282,7 +281,7 @@ class SuggestEditView(UpdateView):
 
 class ReportViolationView(CreateView):
     """View that allows users to report a violation of an organization."""
-    template_name = "orgs/report.html" # TODO:Create Custom Template
+    template_name = "orgs/report.html"
     form_class = ViolationReportForm
     model = ViolationReport
 
@@ -312,7 +311,7 @@ class ReportViolationView(CreateView):
         return super().form_valid(form)
         
 
-class UpdateOrgView(LoginRequiredMixin, UpdateView):
+class UpdateOrgView(UserPassesTestMixin, LoginRequiredMixin, UpdateView):
     """Update an existing organization"""
     template_name = "orgs/update.html"
     model = Organization
@@ -343,16 +342,12 @@ class UpdateOrgView(LoginRequiredMixin, UpdateView):
             initial['location'] = ", ".join([x for x in location_fields if x])
         
         return initial
-        
-    def dispatch(self, request: object, *args, **kwargs) -> object:
-        """Raise a 404 if user is not an organizer"""
-        #TODO: #23 Can this be a TestMixin instead?
+    
+    def test_funct(self):
+        """User must be an organizer of the organization."""
+        return is_organizer(request.user, self.get_object())
 
-        if  is_organizer(request.user, self.get_object()):
-            return super().dispatch(request, *args, **kwargs)
-        raise Http404("You must be an organization member to update an organization.")
         
-
 class ClaimOrgView(LoginRequiredMixin, CreateView):
     """
     Claim an organization if there are no organizers. This request must be reviewed.
