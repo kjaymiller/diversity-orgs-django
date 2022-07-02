@@ -33,11 +33,6 @@ def is_organizer(user: object, org:object) -> bool:
     return False
 
 
-def get_tag_q(tag: str, value: str) -> Q:
-    """Get a query for a tag and any parent tags"""
-    return Q(**{f'{tag}__name__iexact': value}) | Q(**{f'{tag}__parents__name__in': value})
-
-
 def get_location_q(params: dict[str, Any]) -> dict[Any]:
     """Get a query for a set of location parameters."""
     if "city" in params:
@@ -75,7 +70,8 @@ def get_by_params(params: dict[str, Any], model: Organization=Organization,) -> 
 
     for tag in ('diversity', 'technology'):
         if tag in valid_params: 
-           queries |= get_tag_q(tag, valid_params[tag])
+           queries |= Q(**{f'{tag}__name__iexact': valid_params[tag]}) \
+                | Q(**{f'{tag}__parents__name__in': valid_params[tag]})
 
     # Combine all the filters
     for param in [bool_params, location_params, queries]:
