@@ -1,0 +1,8 @@
+django
+requests 
+psycopg2
+click 
+uvicorn
+pip-tools
+black
+isort
