@@ -11,7 +11,9 @@
     {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
     <link href="{% static 'web/css/style.css' %}" rel="stylesheet">
     {% if map %}
-        {% include 'assets/map_head_embed.html' %}
+        {% if AZURE_MAPS_KEY %}
+            {% include 'assets/map_head_embed.html' %}
+        {% endif %}
     {% endif %}
 
     {% block head %}{% endblock %}

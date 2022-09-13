@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% block head %}
-{% include 'assets/map_head_embed.html' %}
+{% if AZURE_MAPS_KEY %}
+    {% include 'assets/map_head_embed.html' %}
+{% endif %}
 {% endblock %}
 {% block content %}
 
