@@ -250,7 +250,9 @@ class SuggestEditView(UpdateView):
         initial = super().get_initial(*args, **kwargs)
         initial["diversity"] = (", ").join([x.name for x in self.object.diversity.all()])
         initial["technology"] = (", ").join([x.name for x in self.object.technology.all()])
-        initial["organizers"] = (", ").join([x.email for x in self.object.organizers.all()])
+        
+        if self.object.organizers.all():
+            initial["organizers"] = (", ").join([x.email for x in self.object.organizers.all()])
 
         if self.object.location:
             location_fields = (
