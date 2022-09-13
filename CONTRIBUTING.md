@@ -14,6 +14,12 @@ Although this project is deployed on Azure, the goal is that it can be hosted an
 ### Black & iSort
 This project uses Black and isort to format code. Please run these before submitting a PR.
 
+### Models
+The `Organization` model is the main model for this project. Associated models are `Location`, `DiversityFocus`, and `TechnologyFocus`. The models are stoed in [org_pages/models.py](./org_pages/models.py).
+
+### Views
+The project uses Django's class-based views. The views are stored in [org_pages/views.py](./org_pages/views.py).
+
 ## Developing Django Views
 Please use class-based views for all new views created.
 
